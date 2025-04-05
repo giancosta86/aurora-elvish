@@ -6,7 +6,7 @@ use path
 fn -set-path-entry {|current-node-executable-path|
   var current-path = (path:dir $current-node-executable-path)
 
-  var paths-without-nvm = [(put $@paths | each {|path|
+  var paths-without-nvm = [(put $@paths | each { |path|
       if (not (str:has-prefix $path ~/.nvm/)) {
         put $path
       }
