@@ -15,11 +15,11 @@ fn -set-path-entry {|current-node-executable-path|
   set paths = [$current-path $@paths-without-nvm]
 }
 
-fn nvm {|@a|
+fn nvm {|params|
   var temp-file = (os:temp-file)
 
   try {
-    bash -c 'source ~/.nvm/nvm.sh; nvm '(str:join " " [$@a])'; nvm which current > '$temp-file[name]
+    bash -c 'source ~/.nvm/nvm.sh; nvm '(str:join " " [$@params])'; nvm which current > '$temp-file[name]
 
     var nvm-path-entry = (slurp < $temp-file)
 
