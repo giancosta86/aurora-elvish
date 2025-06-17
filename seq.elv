@@ -27,7 +27,3 @@ fn enumerate { |@inputs|
     fail 'Invalid arity! 1 or 2 arguments expected!'
   }
 }
-
-fn to-csv { |source|
-  str:join , $source
-}
