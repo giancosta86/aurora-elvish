@@ -11,3 +11,7 @@ fn print-expected-and-actual { |inputs|
   print (styled $actual-description': ' red bold)
   pprint $actual
 }
+
+fn print-exception { |e|
+  pprint $e
+}

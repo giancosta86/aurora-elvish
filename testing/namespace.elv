@@ -3,6 +3,7 @@ use str
 use ../command
 use ./expect
 use ./expect-fn
+use ./format
 
 fn create {
   var description-path = []
@@ -30,7 +31,7 @@ fn create {
         try {
           $block
         } catch e {
-          pprint $e
+          format:print-exception $e
           fail $e
         }
       }
