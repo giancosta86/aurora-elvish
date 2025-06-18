@@ -29,7 +29,7 @@ fn expect { |subject|
       }
     }
 
-    &to-exact-equal={ |expected|
+    &to-be={ |expected|
       if (not-eq $expected $resolved-subject) {
         format:print-expected-and-actual [
           &expected-description='Expected'
