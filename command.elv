@@ -6,7 +6,7 @@ fn exists-in-bash { |command|
   eq $ok ?(bash -c 'type '$command > $os:dev-null 2>&1)
 }
 
-fn silent-until-error { |block|
+fn silent-until-error { |&description=$nil block|
   var log-file = (os:temp-file)
   file:close $log-file
 
@@ -16,14 +16,15 @@ fn silent-until-error { |block|
     var outcome = ?($block > $log-file-path 2>&1)
 
     if (not $outcome) {
+      var actual-description = (coalesce $description 'Error while running command block!')
       var log-file-size = (os:stat $log-file-path)[size]
 
       if (> $log-file-size 0) {
-        console:section &emoji=❌ 'Error while running command block! Log' {
+        console:section &emoji=❌ $actual-description {
           cat $log-file-path
         }
       } else {
-        console:echo ❌ The command block failed, but no log is available...
+        console:echo ❌ $actual-description
       }
 
       fail $outcome

@@ -46,7 +46,7 @@ fn inspect-inputs { |inputs|
 }
 
 fn section { |&emoji=🔎 description string-or-block|
-  echo $emoji''$description":"
+  echo $emoji' '$description":"
 
   if (lang:is-function $string-or-block) {
     $string-or-block > &2
