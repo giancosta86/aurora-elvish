@@ -9,4 +9,4 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: giancosta86/aurora-github/actions/tag-and-release@v10
+      - uses: giancosta86/aurora-github/actions/tag-and-release@v11

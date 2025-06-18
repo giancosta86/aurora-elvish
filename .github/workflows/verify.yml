@@ -13,12 +13,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: giancosta86/aurora-github/actions/check-project-license@v10
+      - uses: giancosta86/aurora-github/actions/check-project-license@v11
+
+  run-tests:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: giancosta86/aurora-github/actions/run-custom-tests@v11
 
   verify:
     runs-on: ubuntu-24.04
     needs:
       - check-license
+      - run-tests
 
     steps:
       - name: Show completion message
