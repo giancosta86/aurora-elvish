@@ -1,5 +1,3 @@
-use str
-
 fn is-empty { |container| == (count $container) 0 }
 
 fn is-non-empty { |container| != (count $container) 0 }
@@ -16,8 +14,7 @@ fn enumerate { |@inputs|
       set index = (+ $index 1)
     }
   } elif (== $input-count 2) {
-    var consumer = $inputs[0]
-    var sequence = $inputs[1]
+    var sequence consumer = (all $inputs)
 
     range 0 (count $sequence) | each { |index|
       var item = $sequence[$index]

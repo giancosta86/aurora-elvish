@@ -11,7 +11,7 @@ describe 'Converting empty string to default' {
     }
 
     describe 'when not passing a default value' {
-      it 'should put nil' {
+      it 'should put $nil' {
         var output = (string:empty-to-default '')
 
         (expect $output)[to-be] $nil

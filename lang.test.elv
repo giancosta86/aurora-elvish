@@ -2,13 +2,13 @@ use ./lang
 
 describe 'Function detector' {
   describe 'when passing a non-function value' {
-    it 'should put false' {
+    it 'should put $false' {
       (expect (lang:is-function 98))[to-be] $false
     }
   }
 
   describe 'when passing a function' {
-    it 'should put true' {
+    it 'should put $true' {
       fn my-function { echo 'Hello' }
 
       (expect (lang:is-function $my-function~))[to-be] $true
@@ -16,7 +16,7 @@ describe 'Function detector' {
   }
 
   describe 'when passing a code block' {
-    it 'should put true' {
+    it 'should put $true' {
       var code = { echo 'Hello' }
 
       (expect (lang:is-function $code))[to-be] $true
