@@ -12,15 +12,6 @@ fn entries { |source|
   }
 }
 
-fn each-entry { |source consumer|
-  entries $source | each { |entry|
-    var key = $entry[0]
-    var value = $entry[1]
-
-    $consumer $key $value
-  }
-}
-
 fn merge { |@sources|
   var result = [&]
 

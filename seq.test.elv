@@ -105,3 +105,23 @@ describe 'Enumerating' {
     }
   }
 }
+
+describe 'Iterating and spreading as consumer arguments' {
+  describe 'when the sequence is empty' {
+    it 'should not call the consumer' {
+      all [] |
+        seq:each-spread { |a b| fail 'THIS SHOULD NOT RUN' }
+    }
+  }
+
+  describe 'when there are items' {
+    it 'should call the consumer for every sequence of items' {
+      var mapped-items = [(
+        all [[a b 90] [x y 92]] |
+          seq:each-spread { |left right result| put $left'+'$right'='$result }
+      )]
+
+      (expect $mapped-items)[to-equal] [a+b=90 x+y=92]
+    }
+  }
+}

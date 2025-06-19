@@ -24,3 +24,9 @@ fn enumerate { |@inputs|
     fail 'Invalid arity! 1 or 2 arguments expected!'
   }
 }
+
+fn each-spread { |consumer|
+  each { |items|
+    call $consumer $items [&]
+  }
+}
