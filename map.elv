@@ -26,7 +26,7 @@ fn merge { |@sources|
 fn drill-down { |&default=$nil source @properties|
   var current-source = $source
 
-  for property $properties {
+  all $properties | each { |property|
     var value = (get-value $current-source $property)
 
     if $value {
