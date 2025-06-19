@@ -1,3 +1,5 @@
+use ./seq
+
 fn get-value { |&default=$nil source key|
   if (has-key $source $key) {
     put $source[$key]
@@ -13,15 +15,12 @@ fn entries { |source|
 }
 
 fn merge { |@sources|
-  var result = [&]
-
-  for source $sources {
-    each-entry $source { |key value|
-      set result = (assoc $result $key $value)
+  all $sources |
+    each $entries~ |
+    seq:reduce [&] { |accumulator entry|
+      var key value = (all $entry)
+      assoc $accumulator $key $value
     }
-  }
-
-  put $result
 }
 
 fn drill-down { |&default=$nil source @properties|
