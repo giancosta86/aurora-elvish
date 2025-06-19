@@ -1,17 +1,23 @@
 use os
 
-fn backup { |&suffix='.orig' path block|
-  if (not (os:is-regular $path)) {
-    return
+fn preserve-state { |&suffix='.orig' path block|
+  var backup-path
+
+  if (os:is-regular $path) {
+    set backup-path = $path$suffix
+
+    cp $path $backup-path
+  } else {
+    set backup-path = $nil
   }
-
-  var backup-path = $path$suffix
-
-  cp $path $backup-path
 
   try {
     $block
   } finally {
-    mv $backup-path $path
+    if $backup-path {
+      mv $backup-path $path
+    } else {
+      rm $path
+    }
   }
 }
