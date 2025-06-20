@@ -6,30 +6,45 @@ fn exists-in-bash { |command|
   eq $ok ?(bash -c 'type '$command > $os:dev-null 2>&1)
 }
 
-fn silent-until-error { |&description=$nil block|
+fn capture-to-log { |&stderr=$true block|
   var log-file = (os:temp-file)
   file:close $log-file
 
-  var log-file-path = $log-file[name]
+  var log-path = $log-file[name]
+  var outcome
 
-  try {
-    var outcome = ?($block > $log-file-path 2>&1)
+  if $stderr {
+    set outcome = ?({ $block > $log-path 2>&1 })
+  } else {
+    set outcome = ?({ $block > $log-path })
+  }
 
-    if (not $outcome) {
-      var actual-description = (coalesce $description 'Error while running command block!')
-      var log-file-size = (os:stat $log-file-path)[size]
+  put [
+    &outcome=$outcome
+    &log-path=$log-path
+    &get-log={ slurp < $log-file[name] }
+    &clean={ rm -f $log-file[name] }
+  ]
+}
 
-      if (> $log-file-size 0) {
-        console:section &emoji=❌ $actual-description {
-          cat $log-file-path
-        }
-      } else {
-        console:echo ❌ $actual-description
+fn silent-until-error { |&description=$nil block|
+  var capture-result = (capture-to-log $block)
+  defer $capture-result[clean]
+
+  if (not $capture-result[outcome]) {
+    var actual-description = (coalesce $description 'Error while running command block!')
+
+    var log-path = $capture-result[log-path]
+    var log-size = (os:stat $log-path)[size]
+
+    if (> $log-size 0) {
+      console:section &emoji=❌ $actual-description {
+        cat $log-path
       }
-
-      fail $outcome
+    } else {
+      console:echo ❌ $actual-description
     }
-  } finally {
-    rm -f $log-file-path
+
+    fail $capture-result[outcome]
   }
 }
