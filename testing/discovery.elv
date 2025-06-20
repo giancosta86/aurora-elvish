@@ -59,3 +59,9 @@ fn run { |&allow-crash=$false|
     &is-ok=$is-ok
   ]
 }
+
+fn test { |&allow-crash=$false|
+  clear
+
+  pprint (run &allow-crash=$allow-crash)
+}
