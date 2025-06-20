@@ -4,7 +4,7 @@ use ./namespace
 var -test-extension = .test.elv
 
 fn -get-test-files {
-  put **[type:regular]$-test-extension
+  put **[type:regular][nomatch-ok]$-test-extension
 }
 
 fn has-tests {
