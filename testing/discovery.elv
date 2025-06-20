@@ -32,7 +32,30 @@ fn run-file { |&allow-crash=$false path|
 }
 
 fn run { |&allow-crash=$false|
-  -get-test-files | each { |test-file-path|
-    run-file &allow-crash=$allow-crash $test-file-path
-  }
+  var is-ok = $true
+
+  var file-results = (
+    -get-test-files |
+      each { |test-file-path|
+        var file-result = (run-file &allow-crash=$allow-crash $test-file-path)
+
+        if (> $file-result[failed] 0) {
+          set is-ok = $false
+        }
+
+        put [
+          $file-result[path]
+          [
+            &passed=$file-result[passed]
+            &failed=$file-result[failed]
+          ]
+        ]
+      } |
+      make-map
+    )
+
+  put [
+    &file-results=$file-results
+    &is-ok=$is-ok
+  ]
 }
