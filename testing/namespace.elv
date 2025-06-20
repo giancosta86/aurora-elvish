@@ -2,9 +2,8 @@ use os
 use str
 use ../command
 use ./assertions
-use ./format
 
-fn create {
+fn create { |&allow-crash=$false|
   var description-path = []
   var test-closures = []
 
@@ -25,19 +24,25 @@ fn create {
   fn it { |description block|
     var full-description = (get-full-description $description)
 
-    try {
+    var test-outcome = ?(
       command:silence-until-error &description=(styled $full-description red bold) {
         try {
           $block
         } catch e {
-          format:print-exception $e
+          pprint $e
           fail $e
         }
       }
-    } catch e {
-      set failed = (+ $failed 1)
-    } else {
+    )
+
+    if $test-outcome {
       set passed = (+ $passed 1)
+    } else {
+      set failed = (+ $failed 1)
+
+      if $allow-crash {
+        fail $test-outcome
+      }
     }
   }
 

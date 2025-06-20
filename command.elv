@@ -14,9 +14,9 @@ fn capture-to-log { |&stderr=$true block|
   var outcome
 
   if $stderr {
-    set outcome = ?({ $block > $log-path 2>&1 })
+    set outcome = ?({ { $block | only-bytes } > $log-path 2>&1 })
   } else {
-    set outcome = ?({ $block > $log-path })
+    set outcome = ?({ { $block | only-bytes } > $log-path })
   }
 
   put [
@@ -28,7 +28,7 @@ fn capture-to-log { |&stderr=$true block|
 }
 
 fn silence { |block|
-  $block > $os:dev-null 2>&1
+  { $block | only-bytes } > $os:dev-null 2>&1
 }
 
 fn silence-until-error { |&description=$nil block|

@@ -154,7 +154,15 @@ describe 'Silencing a block' {
 
   describe 'when the block fails' {
     it 'should fail as well' {
-      fail-test
+      var error-message = 'MEGA-BOOM!'
+
+      expect-crash {
+        command:silence {
+          fail $error-message
+        }
+      } |
+        str:contains (all)[reason][content] $error-message |
+        should-be $true
     }
   }
 }
@@ -211,7 +219,8 @@ describe 'Silencing a block until error' {
       defer $capture-result[clean]
 
       $capture-result[get-log] |
-        should-equal ''
+        str:contains (all) '❌❌❌' |
+        should-be $true
     }
   }
 }

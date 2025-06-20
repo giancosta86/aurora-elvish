@@ -17,8 +17,8 @@ fn has-tests {
   not-eq $first-file $nil
 }
 
-fn run-file { |path|
-  var test-namespace = (namespace:create)
+fn run-file { |&allow-crash=$false path|
+  var test-namespace = (namespace:create &allow-crash=$allow-crash)
 
   var source-string = (slurp < $path)
 
@@ -31,8 +31,8 @@ fn run-file { |path|
   ]
 }
 
-fn run {
+fn run { |&allow-crash=$false|
   -get-test-files | each { |test-file-path|
-    run-file $test-file-path
+    run-file &allow-crash=$allow-crash $test-file-path
   }
 }
