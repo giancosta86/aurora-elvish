@@ -32,19 +32,16 @@ fn run-file { |&allow-crash=$false path|
 }
 
 fn run { |&allow-crash=$false|
-  var is-ok = $true
   var total-tests = 0
+  var total-failed = 0
 
   var file-results = (
     -get-test-files |
       each { |test-file-path|
         var file-result = (run-file &allow-crash=$allow-crash $test-file-path)
 
-        if (> $file-result[failed] 0) {
-          set is-ok = $false
-        }
-
         set total-tests = (+ $total-tests $file-result[passed] $file-result[failed])
+        set total-failed = (+ $total-failed $file-result[failed])
 
         put [
           $file-result[path]
@@ -58,8 +55,9 @@ fn run { |&allow-crash=$false|
     )
 
   put [
-    &is-ok=$is-ok
+    &is-ok=(== $total-failed 0)
     &total-tests=$total-tests
+    &total-failed=$total-failed
     &file-results=$file-results
   ]
 }
