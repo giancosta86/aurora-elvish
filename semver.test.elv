@@ -15,30 +15,42 @@ describe 'Parsing a semver' {
         it 'should parse all the components' {
           var semver = (semver:parse $source)
 
-          (expect $semver[major])[to-equal] $major
+          put $semver[major] |
+            should-equal $major
 
-          (expect $semver[minor])[to-equal] $minor
+          put $semver[minor] |
+            should-equal $minor
 
-          (expect $semver[patch])[to-equal] $patch
+          put $semver[patch] |
+            should-equal $patch
 
-          (expect $semver[pre-release])[to-equal] $pre-release
+          put $semver[pre-release] |
+            should-equal $pre-release
 
-          (expect $semver[build])[to-equal] $build
+          put $semver[build] |
+            should-equal $build
         }
       }
 
-      it 'should parse all the components' {
-        var semver = (semver:parse 'v'$source)
+      describe 'with the optional leading v' {
+        it 'should parse all the components' {
+          var semver = (semver:parse 'v'$source)
 
-        (expect $semver[major])[to-equal] $major
+          put $semver[major] |
+            should-equal $major
 
-        (expect $semver[minor])[to-equal] $minor
+          put $semver[minor] |
+            should-equal $minor
 
-        (expect $semver[patch])[to-equal] $patch
+          put $semver[patch] |
+            should-equal $patch
 
-        (expect $semver[pre-release])[to-equal] $pre-release
+          put $semver[pre-release] |
+            should-equal $pre-release
 
-        (expect $semver[build])[to-equal] $build
+          put $semver[build] |
+            should-equal $build
+        }
       }
     }
   }
@@ -48,19 +60,24 @@ describe 'Parsing a semver' {
     var semver = (semver:parse $major)
 
     it 'should have the major component' {
-      (expect $semver[major])[to-equal] $major
+      put $semver[major] |
+        should-equal $major
     }
 
     it 'should have minor and patch set to 0' {
-      (expect $semver[minor])[to-equal] 0
+      put $semver[minor] |
+        should-equal 0
 
-      (expect $semver[patch])[to-equal] 0
+      put $semver[patch] |
+        should-equal 0
     }
 
     it 'should have pre-release and build set to $nil' {
-      (expect $semver[pre-release])[to-be] $nil
+      put $semver[pre-release] |
+        should-be $nil
 
-      (expect $semver[build])[to-be] $nil
+      put $semver[build] |
+        should-be $nil
     }
   }
 }

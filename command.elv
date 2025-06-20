@@ -27,7 +27,11 @@ fn capture-to-log { |&stderr=$true block|
   ]
 }
 
-fn silent-until-error { |&description=$nil block|
+fn silence { |block|
+  $block > $os:dev-null 2>&1
+}
+
+fn silence-until-error { |&description=$nil block|
   var capture-result = (capture-to-log $block)
   defer $capture-result[clean]
 

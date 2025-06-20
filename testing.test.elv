@@ -1,26 +1,36 @@
-describe "Arithmetic" {
-  describe "addition" {
-    it "should work" {
+use str
+
+describe 'Arithmetic' {
+  describe 'addition' {
+    it 'should work' {
       echo Testing addition...
 
-      var sum = (+ 90 2)
-
-      (expect $sum)[to-equal] 92
+      + 90 2 |
+        should-equal 92
     }
   }
 
-  describe "division" {
-    it "should work" {
-      var division = (/ 90 10)
-
-      (expect $division)[to-equal] 9
+  describe 'division' {
+    it 'should work' {
+      / 90 10 |
+        should-equal 9
     }
 
-    describe "when dividing by zero" {
-      it "should fail" {
-        (expect-fn {
+    describe 'when dividing by zero' {
+      it 'should fail with no subsequent check' {
+        expect-crash {
           / 98 0
-        })[to-fail]
+        }
+      }
+
+      it 'should fail with subsequent check' {
+        expect-crash {
+          / 98 0
+        } |
+        each { |e|
+          str:contains (to-string $e[reason]) divisor
+        } |
+        should-be $true
       }
     }
   }

@@ -10,7 +10,8 @@ describe 'Presderving file state' {
         rm $test-file
       }
 
-      (expect (os:is-regular $test-file))[to-be] $true
+      os:is-regular $test-file |
+        should-be $true
     }
   }
 
@@ -22,7 +23,8 @@ describe 'Presderving file state' {
         echo Some text > $test-file
       }
 
-      (expect (os:is-regular $test-file))[to-be] $false
+      os:is-regular $test-file |
+        should-be $false
     }
   }
 }

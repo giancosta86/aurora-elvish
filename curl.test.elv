@@ -14,9 +14,8 @@ describe 'cURL' {
 
         var log = (slurp < curl.log)
 
-        var has-header = (str:contains $log '%')
-
-        (expect $has-header)[to-be] $true
+        str:contains $log '%' |
+          should-be $true
       }
     }
   }
@@ -31,9 +30,8 @@ describe 'cURL' {
 
         var log = (slurp < curl.log)
 
-        var has-header = (str:contains $log '%')
-
-        (expect $has-header)[to-be] $false
+        str:contains $log '%' |
+          should-be $false
       }
     }
   }

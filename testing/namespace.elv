@@ -1,8 +1,7 @@
 use os
 use str
 use ../command
-use ./expect
-use ./expect-fn
+use ./assertions
 use ./format
 
 fn create {
@@ -27,7 +26,7 @@ fn create {
     var full-description = (get-full-description $description)
 
     try {
-      command:silent-until-error &description=(styled $full-description red bold) {
+      command:silence-until-error &description=(styled $full-description red bold) {
         try {
           $block
         } catch e {
@@ -50,8 +49,9 @@ fn create {
     &describe~=$describe~
     &it~=$it~
     &fail-test~=$fail-test~
-    &expect~=$expect:expect~
-    &expect-fn~=$expect-fn:expect-fn~
+    &should-be~=$assertions:should-be~
+    &should-equal~=$assertions:should-equal~
+    &expect-crash~=$assertions:expect-crash~
     &get-passed~={ put $passed }
     &get-failed~={ put $failed }
   ]

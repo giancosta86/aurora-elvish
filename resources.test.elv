@@ -9,8 +9,7 @@ describe 'Retrieving a resource' {
 
     var license-content = (slurp < $license-path)
 
-    var has-copyright = (str:contains $license-content Copyright)
-
-    (expect $has-copyright)[to-be] $true
+    str:contains $license-content Copyright |
+      should-be $true
   }
 }
