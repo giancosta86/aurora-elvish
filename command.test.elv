@@ -30,16 +30,7 @@ describe 'Testing whether a command exists in Bash' {
 }
 
 describe 'Capturing a block of commands to log' {
-  it 'should actually create the log file on output' {
-    var capture-result = (command:capture-to-log {
-      echo Hello, world!
-    })
-
-    os:is-regular $capture-result[log-path] |
-      should-be $true
-  }
-
-  it 'should have a cleaning method' {
+  it 'should have a working cleaning method' {
     var capture-result = (command:capture-to-log {
       echo Hello, world!
     })
@@ -48,6 +39,16 @@ describe 'Capturing a block of commands to log' {
 
     os:is-regular $capture-result[log-path] |
       should-be $false
+  }
+
+  it 'should actually create the log file on output' {
+    var capture-result = (command:capture-to-log {
+      echo Hello, world!
+    })
+    defer $capture-result[clean]
+
+    os:is-regular $capture-result[log-path] |
+      should-be $true
   }
 
   it 'should detect successful outcome' {
@@ -129,27 +130,19 @@ describe 'Capturing a block of commands to log' {
 
 describe 'Silencing a block' {
   it 'should produce no stdout' {
-    var capture-result = (command:capture-to-log {
+    expect-log '' {
       command:silence {
         print TEST-OUT
       }
-    })
-    defer $capture-result[clean]
-
-    $capture-result[get-log] |
-      should-equal ''
+    }
   }
 
   it 'should produce no stderr' {
-    var capture-result = (command:capture-to-log {
+    expect-log '' {
       command:silence {
         print TEST-ERR >&2
       }
-    })
-    defer $capture-result[clean]
-
-    $capture-result[get-log] |
-      should-equal ''
+    }
   }
 
   describe 'when the block fails' {
@@ -170,57 +163,39 @@ describe 'Silencing a block' {
 describe 'Silencing a block until error' {
   describe 'when the block is successful' {
     it 'should print no stdout' {
-      var capture-result = (command:capture-to-log {
+      expect-log '' {
         command:silence-until-error {
           print TEST-OUT
         }
-      })
-      defer $capture-result[clean]
-
-      $capture-result[get-log] |
-        should-equal ''
+      }
     }
 
     it 'should print no stderr' {
-      var capture-result = (command:capture-to-log {
+      expect-log '' {
         command:silence-until-error {
           print TEST-ERR >&2
         }
-      })
-      defer $capture-result[clean]
-
-      $capture-result[get-log] |
-        should-equal ''
+      }
     }
   }
 
   describe 'when the block fails' {
     it 'should print stdout' {
-      var capture-result = (command:capture-to-log {
+      expect-log &partial '❌❌❌' {
         command:silence-until-error {
           print TEST-OUT
-          fail 'KABOOOOM!'
+          fail 'KABOOM!'
         }
-      })
-      defer $capture-result[clean]
-
-      $capture-result[get-log] |
-        str:contains (all) '❌❌❌' |
-        should-be $true
+      }
     }
 
     it 'should print stderr' {
-      var capture-result = (command:capture-to-log {
+      expect-log &partial '❌❌❌' {
         command:silence-until-error {
           print TEST-ERR >&2
-          fail 'KABOOOOM!'
+          fail 'KABOOM!'
         }
-      })
-      defer $capture-result[clean]
-
-      $capture-result[get-log] |
-        str:contains (all) '❌❌❌' |
-        should-be $true
+      }
     }
   }
 }

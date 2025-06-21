@@ -1,4 +1,7 @@
 use os
+use str
+use ../command
+use ../lang
 
 fn -print-expected-and-actual { |inputs|
   var expected-description = $inputs[expected-description]
@@ -27,7 +30,7 @@ fn should-equal { |expected|
         &actual=$actual-string
       ]
 
-      fail 'Assertion failed'
+      fail 'should-equal assertion failed'
     }
   }
 }
@@ -42,7 +45,7 @@ fn should-be { |expected|
         &actual=$actual
       ]
 
-      fail 'Assertion failed'
+      fail 'should-be assertion failed'
     }
   }
 }
@@ -54,5 +57,37 @@ fn expect-crash { |block|
     put $e
   } else {
     fail 'The given code block did not fail!'
+  }
+}
+
+fn expect-log { |&partial=$false expected block|
+  var capture-result = (command:capture-to-log $block)
+
+  defer $capture-result[clean]
+
+  var log = ($capture-result[get-log])
+
+  if $partial {
+    if (not (str:contains $log $expected)) {
+      -print-expected-and-actual [
+        &expected-description='Expected partial log'
+        &expected=$expected
+        &actual-description='Actual log'
+        &actual=$log
+      ]
+
+      fail 'should-be (&partial) assertion failed'
+    }
+  } else {
+    if (not-eq $log $expected) {
+      -print-expected-and-actual [
+        &expected-description='Expected log'
+        &expected=$expected
+        &actual-description='Actual log'
+        &actual=$log
+      ]
+
+      fail 'should-be assertion failed'
+    }
   }
 }
