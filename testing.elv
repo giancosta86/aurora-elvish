@@ -1,7 +1,7 @@
-use ./testing/discovery
+use ./testing/runner
 
-var has-tests~ = $discovery:has-tests~
+var has-tests~ = $runner:has-tests~
 
-var run~ = $discovery:run~
+var run~ = $runner:run~
 
-var test~ = $discovery:test~
+var test~ = $runner:test~
