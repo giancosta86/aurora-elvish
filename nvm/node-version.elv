@@ -38,9 +38,9 @@ fn -detect-from-nvmrc {
 
 fn detect-in-pwd {
   coalesce (
-    -detect-node-version-from-nvmrc
+    -detect-from-nvmrc
   ) (
-    -detect-node-version-from-package-json
+    -detect-from-package-json
   )
 }
 

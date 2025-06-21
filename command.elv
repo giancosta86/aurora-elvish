@@ -1,16 +1,14 @@
-use file
 use os
 use ./console
+use ./files
 
 fn exists-in-bash { |command|
   eq $ok ?(bash -c 'type '$command > $os:dev-null 2>&1)
 }
 
 fn capture-to-log { |&stderr=$true block|
-  var log-file = (os:temp-file)
-  file:close $log-file
+  var log-path = (files:temp-path)
 
-  var log-path = $log-file[name]
   var outcome
 
   if $stderr {
@@ -22,8 +20,8 @@ fn capture-to-log { |&stderr=$true block|
   put [
     &outcome=$outcome
     &log-path=$log-path
-    &get-log={ slurp < $log-file[name] }
-    &clean={ rm -f $log-file[name] }
+    &get-log={ slurp < $log-path }
+    &clean={ rm -f $log-path }
   ]
 }
 

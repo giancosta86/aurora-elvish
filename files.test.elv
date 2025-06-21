@@ -1,7 +1,42 @@
 use os
+use path
+use str
 use ./files
 
-describe 'Presderving file state' {
+describe 'Requesting a temp path' {
+  describe 'when not passing a pattern' {
+    it 'should use the default pattern' {
+      var default-prefix = 'elvish-'
+
+      var temp-path = (files:temp-path)
+
+      path:base $temp-path |
+        str:has-prefix (all) $default-prefix |
+        should-be $true
+    }
+  }
+
+  describe 'when passing a custom pattern' {
+    var custom-prefix = 'alpha-'
+    var custom-suffix = '-omega'
+
+    var temp-path = (files:temp-path $custom-prefix'*'$custom-suffix)
+
+    it 'should have the requested prefix' {
+      path:base $temp-path |
+        str:has-prefix (all) $custom-prefix |
+        should-be $true
+    }
+
+    it 'should have the requested suffix' {
+      path:base $temp-path |
+        str:has-suffix (all) $custom-suffix |
+        should-be $true
+    }
+  }
+}
+
+describe 'Preserving file state' {
   describe 'if the file existed' {
     it 'should restore the original file in the end' {
       var test-file = LICENSE

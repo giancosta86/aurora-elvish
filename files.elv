@@ -1,4 +1,12 @@
+use file
 use os
+
+fn temp-path { |&dir='' @pattern|
+  var temp-file = (os:temp-file &dir=$dir $@pattern)
+  file:close $temp-file
+
+  put $temp-file[name]
+}
 
 fn preserve-state { |&suffix='.orig' path block|
   var backup-path

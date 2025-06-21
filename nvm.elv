@@ -1,7 +1,6 @@
-use os
-use file
 use str
 use path
+use ./files
 
 fn -set-path-entry {|current-node-executable-path|
   var current-path = (path:dir $current-node-executable-path)
@@ -16,18 +15,14 @@ fn -set-path-entry {|current-node-executable-path|
 }
 
 fn nvm {|params|
-  var temp-file = (os:temp-file)
+  var temp-path = (files:temp-path)
+  defer { rm -f $temp-path }
 
-  try {
-    bash -c 'source ~/.nvm/nvm.sh; nvm '(str:join " " [$@params])'; nvm which current > '$temp-file[name]
+  bash -c 'source ~/.nvm/nvm.sh; nvm '(str:join " " [$@params])'; nvm which current > '$temp-path
 
-    var nvm-path-entry = (slurp < $temp-file)
+  var nvm-path-entry = (slurp < $temp-path)
 
-    -set-path-entry $nvm-path-entry
-  } finally {
-    file:close $temp-file
-    os:remove $temp-file[name]
-  }
+  -set-path-entry $nvm-path-entry
 }
 
 fn ensure-path-entry {

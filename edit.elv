@@ -1,5 +1,5 @@
-fn file { |path text-transformer|
-  var updated-content = (slurp < $path | $text-transformer (all))
+fn file { |path transformer|
+  var updated-content = (slurp < $path | $transformer (all))
 
   if $updated-content {
     print $updated-content > $path
