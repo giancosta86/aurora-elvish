@@ -50,7 +50,7 @@ fn should-be { |expected|
   }
 }
 
-fn expect-fail { |block|
+fn expect-crash { |block|
   try {
     $block
   } catch e {

@@ -161,7 +161,7 @@ describe 'Capturing the bytes from a block of commands' {
 
   describe 'when passing an invalid stream value' {
     it 'should fail' {
-      expect-fail {
+      expect-crash {
         command:capture-bytes &stream=INEXISTENT {}
       } |
         each { |e|
@@ -194,7 +194,7 @@ describe 'Silencing a block' {
     it 'should fail as well' {
       var error-message = 'MEGA-BOOM!'
 
-      expect-fail {
+      expect-crash {
         command:silence {
           fail $error-message
         }
