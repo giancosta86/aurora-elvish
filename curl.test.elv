@@ -15,7 +15,7 @@ describe 'cURL' {
         var log = (slurp < curl.log)
 
         str:contains $log '%' |
-          should-be &strictly $true
+          should-be $true
       }
     }
   }
@@ -31,7 +31,7 @@ describe 'cURL' {
         var log = (slurp < curl.log)
 
         str:contains $log '%' |
-          should-be &strictly $false
+          should-be $false
       }
     }
   }

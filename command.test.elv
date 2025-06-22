@@ -6,7 +6,7 @@ describe 'Testing whether a command exists in Bash' {
   describe 'if the command is a program in the path' {
     it 'should put $true' {
       command:exists-in-bash cat |
-        should-be &strictly $true
+        should-be $true
     }
   }
 
@@ -17,14 +17,14 @@ describe 'Testing whether a command exists in Bash' {
       echo 'alias '$test-alias'=''ls -l''' >> ~/.bashrc
 
       command:exists-in-bash cat |
-        should-be &strictly $true
+        should-be $true
     }
   }
 
   describe 'if the command does not exist' {
     it 'should put $false' {
       command:exists-in-bash INEXISTENT |
-        should-be &strictly $false
+        should-be $false
     }
   }
 }
@@ -37,7 +37,7 @@ describe 'Capturing the bytes from a block of commands' {
     defer $capture-result[clean]
 
     os:is-regular $capture-result[log-path] |
-      should-be &strictly $true
+      should-be $true
   }
 
   it 'should actually create the log file for stderr' {
@@ -47,7 +47,7 @@ describe 'Capturing the bytes from a block of commands' {
     defer $capture-result[clean]
 
     os:is-regular $capture-result[log-path] |
-      should-be &strictly $true
+      should-be $true
   }
 
   it 'should have a working cleaning method' {
@@ -58,7 +58,7 @@ describe 'Capturing the bytes from a block of commands' {
     $capture-result[clean]
 
     os:is-regular $capture-result[log-path] |
-      should-be &strictly $false
+      should-be $false
   }
 
   it 'should detect successful outcome' {
@@ -68,7 +68,7 @@ describe 'Capturing the bytes from a block of commands' {
     defer $capture-result[clean]
 
     put $capture-result[outcome] |
-      should-be &strictly $ok
+      should-be $ok
   }
 
   it 'should detect failed outcome' {
@@ -80,7 +80,7 @@ describe 'Capturing the bytes from a block of commands' {
     defer $capture-result[clean]
 
     put $capture-result[outcome][reason][content] |
-      should-be &strictly $exception-message
+      should-be $exception-message
   }
 
   it 'should create a readable log file' {
@@ -165,7 +165,7 @@ describe 'Capturing the bytes from a block of commands' {
         command:capture-bytes &stream=INEXISTENT {}
       } |
         str:contains (all)[reason][content] 'Invalid stream value' |
-        should-be &strictly $true
+        should-be $true
     }
   }
 }
@@ -197,7 +197,7 @@ describe 'Silencing a block' {
         }
       } |
         str:contains (all)[reason][content] $error-message |
-        should-be &strictly $true
+        should-be $true
     }
   }
 }

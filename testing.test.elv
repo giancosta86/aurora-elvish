@@ -30,7 +30,7 @@ describe 'Arithmetic' {
         each { |e|
           str:contains (to-string $e[reason]) divisor
         } |
-        should-be &strictly $true
+        should-be $true
       }
     }
   }

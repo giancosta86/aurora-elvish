@@ -5,14 +5,14 @@ describe 'Is-empty test' {
     describe 'when the list is empty' {
       it 'should put $true' {
         seq:is-empty [] |
-          should-be &strictly $true
+          should-be $true
       }
     }
 
     describe 'when the list is not empty' {
       it 'should put $false' {
         seq:is-empty [A B C] |
-          should-be &strictly $false
+          should-be $false
       }
     }
   }
@@ -21,14 +21,14 @@ describe 'Is-empty test' {
     describe 'when the string is empty' {
       it 'should put $true' {
         seq:is-empty '' |
-          should-be &strictly $true
+          should-be $true
       }
     }
 
     describe 'when the string is not empty' {
       it 'should put $false' {
         seq:is-empty 'Hello' |
-          should-be &strictly $false
+          should-be $false
       }
     }
   }
@@ -39,14 +39,14 @@ describe 'Is-non-empty test' {
     describe 'when the list is empty' {
       it 'should put $false' {
         seq:is-non-empty [] |
-          should-be &strictly $false
+          should-be $false
       }
     }
 
     describe 'when the list is not empty' {
       it 'should put $true' {
         seq:is-non-empty [A B C] |
-          should-be &strictly $true
+          should-be $true
       }
     }
   }
@@ -55,14 +55,14 @@ describe 'Is-non-empty test' {
     describe 'when the string is empty' {
       it 'should put $false' {
         seq:is-non-empty '' |
-          should-be &strictly $false
+          should-be $false
       }
     }
 
     describe 'when the string is not empty' {
       it 'should put $true' {
         seq:is-non-empty 'World' |
-          should-be &strictly $true
+          should-be $true
       }
     }
   }
@@ -86,7 +86,7 @@ describe 'Enumerating' {
       }
 
       put $current-result |
-        should-be &strictly '0:A; 1:B; 2:C; '
+        should-be '0:A; 1:B; 2:C; '
     }
   }
 }

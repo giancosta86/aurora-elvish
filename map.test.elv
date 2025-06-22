@@ -14,7 +14,7 @@ describe 'Getting a value from a map' {
     describe 'when the default value is not passed' {
       it 'should return $nil' {
         map:get-value $map INEXISTING |
-          should-be &strictly $nil
+          should-be $nil
       }
     }
 
@@ -78,7 +78,7 @@ describe 'Drilling down a map' {
   describe 'when the entire path exists' {
     it 'should return the value' {
       map:drill-down $test-map a b c |
-        should-be &strictly 90
+        should-be 90
     }
   }
 
@@ -88,14 +88,14 @@ describe 'Drilling down a map' {
         var test-default = 'Some default value'
 
         map:drill-down $test-map a INEXISTENT c &default=$test-default |
-          should-be &strictly $test-default
+          should-be $test-default
       }
     }
 
     describe 'if no default value is passed' {
       it 'should return $nil' {
         map:drill-down $test-map a INEXISTENT c |
-          should-be &strictly $nil
+          should-be $nil
       }
     }
   }

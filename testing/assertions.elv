@@ -17,9 +17,12 @@ fn -print-expected-and-actual { |inputs|
   pprint $actual
 }
 
-fn should-be { |&strictly=$false expected|
+fn should-be { |&strict=$false expected|
+  var is-string-expected = (==s (kind-of $expected) 'string')
+  var actually-strict = (or $strict (not $is-string-expected))
+
   one | each { |actual|
-    if $strictly {
+    if $actually-strict {
       if (not-eq $expected $actual) {
         -print-expected-and-actual [
           &expected-description='Expected'

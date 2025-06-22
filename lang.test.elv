@@ -4,7 +4,7 @@ describe 'Function detector' {
   describe 'when passing a non-function value' {
     it 'should put $false' {
       lang:is-function 98 |
-        should-be &strictly $false
+        should-be $false
     }
   }
 
@@ -13,7 +13,7 @@ describe 'Function detector' {
       fn my-function { echo 'Hello' }
 
       lang:is-function $my-function~ |
-        should-be &strictly $true
+        should-be $true
     }
   }
 
@@ -22,7 +22,7 @@ describe 'Function detector' {
       var code = { echo 'Hello' }
 
       lang:is-function $code |
-        should-be &strictly $true
+        should-be $true
     }
   }
 }
@@ -31,14 +31,14 @@ describe 'Ternary selector' {
   describe 'when the condition is true' {
     it 'should return the left operand' {
       lang:ternary $true 92 95 |
-        should-be &strictly 92
+        should-be 92
     }
   }
 
   describe 'when the condition is right' {
     it 'should return the right operand' {
       lang:ternary $false 92 95 |
-        should-be &strictly 95
+        should-be 95
     }
   }
 
@@ -47,7 +47,7 @@ describe 'Ternary selector' {
       var block = (lang:ternary $true { fail 'Left' } { fail 'Right' })
 
       lang:is-function $block |
-        should-be &strictly $true
+        should-be $true
     }
   }
 }
@@ -56,14 +56,14 @@ describe 'Ensuring that a put is performed' {
   describe 'when a put is performed' {
     it 'should just do nothing' {
       { put Hello } | lang:ensure-put &default=World |
-        should-be &strictly Hello
+        should-be Hello
     }
   }
 
   describe 'when no put is performed by the block' {
     it 'should put the default value' {
       { } | lang:ensure-put &default=World |
-        should-be &strictly World
+        should-be World
     }
   }
 }

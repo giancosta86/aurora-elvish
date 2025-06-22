@@ -10,47 +10,45 @@ describe 'Parsing a semver' {
 
     var source = $major'.'$minor'.'$patch'-'$pre-release'+'$build
 
-    describe 'with the optional leading v' {
-      describe 'without the optional leading v' {
-        it 'should parse all the components' {
-          var semver = (semver:parse $source)
+    describe 'without the optional leading v' {
+      it 'should parse all the components' {
+        var semver = (semver:parse $source)
 
-          put $semver[major] |
-            should-be $major
+        put $semver[major] |
+          should-be $major
 
-          put $semver[minor] |
-            should-be $minor
+        put $semver[minor] |
+          should-be $minor
 
-          put $semver[patch] |
-            should-be $patch
+        put $semver[patch] |
+          should-be $patch
 
-          put $semver[pre-release] |
-            should-be $pre-release
+        put $semver[pre-release] |
+          should-be $pre-release
 
-          put $semver[build] |
-            should-be $build
-        }
+        put $semver[build] |
+          should-be $build
       }
+    }
 
-      describe 'with the optional leading v' {
-        it 'should parse all the components' {
-          var semver = (semver:parse 'v'$source)
+    describe 'with the optional leading v' {
+      it 'should parse all the components' {
+        var semver = (semver:parse 'v'$source)
 
-          put $semver[major] |
-            should-be $major
+        put $semver[major] |
+          should-be $major
 
-          put $semver[minor] |
-            should-be $minor
+        put $semver[minor] |
+          should-be $minor
 
-          put $semver[patch] |
-            should-be $patch
+        put $semver[patch] |
+          should-be $patch
 
-          put $semver[pre-release] |
-            should-be $pre-release
+        put $semver[pre-release] |
+          should-be $pre-release
 
-          put $semver[build] |
-            should-be $build
-        }
+        put $semver[build] |
+          should-be $build
       }
     }
   }
@@ -74,10 +72,10 @@ describe 'Parsing a semver' {
 
     it 'should have pre-release and build set to $nil' {
       put $semver[pre-release] |
-        should-be &strictly $nil
+        should-be $nil
 
       put $semver[build] |
-        should-be &strictly $nil
+        should-be $nil
     }
   }
 }
