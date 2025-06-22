@@ -27,10 +27,9 @@ describe 'Arithmetic' {
         expect-crash {
           / 98 0
         } |
-        each { |e|
-          str:contains (to-string $e[reason]) divisor
-        } |
-        should-be $true
+          to-string (all)[reason] |
+          str:contains (all) divisor |
+          should-be $true
       }
     }
   }
