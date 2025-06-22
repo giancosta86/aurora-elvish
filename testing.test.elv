@@ -18,13 +18,13 @@ describe 'Arithmetic' {
 
     describe 'when dividing by zero' {
       it 'should fail with no subsequent check' {
-        expect-crash {
+        expect-fail {
           / 98 0
         }
       }
 
       it 'should fail with subsequent check' {
-        expect-crash {
+        expect-fail {
           / 98 0
         } |
         each { |e|

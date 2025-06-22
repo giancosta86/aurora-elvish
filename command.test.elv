@@ -29,9 +29,29 @@ describe 'Testing whether a command exists in Bash' {
   }
 }
 
-describe 'Capturing a block of commands to log' {
+describe 'Capturing the bytes from a block of commands' {
+  it 'should actually create the log file for stdout' {
+    var capture-result = (command:capture-bytes {
+      echo Hello, world!
+    })
+    defer $capture-result[clean]
+
+    os:is-regular $capture-result[log-path] |
+      should-be $true
+  }
+
+  it 'should actually create the log file for stderr' {
+    var capture-result = (command:capture-bytes {
+      echo Hello, world! >&2
+    })
+    defer $capture-result[clean]
+
+    os:is-regular $capture-result[log-path] |
+      should-be $true
+  }
+
   it 'should have a working cleaning method' {
-    var capture-result = (command:capture-to-log {
+    var capture-result = (command:capture-bytes {
       echo Hello, world!
     })
 
@@ -41,18 +61,8 @@ describe 'Capturing a block of commands to log' {
       should-be $false
   }
 
-  it 'should actually create the log file on output' {
-    var capture-result = (command:capture-to-log {
-      echo Hello, world!
-    })
-    defer $capture-result[clean]
-
-    os:is-regular $capture-result[log-path] |
-      should-be $true
-  }
-
   it 'should detect successful outcome' {
-    var capture-result = (command:capture-to-log {
+    var capture-result = (command:capture-bytes {
       echo Hello, world!
     })
     defer $capture-result[clean]
@@ -64,7 +74,7 @@ describe 'Capturing a block of commands to log' {
   it 'should detect failed outcome' {
     var exception-message = 'This is an exception!'
 
-    var capture-result = (command:capture-to-log {
+    var capture-result = (command:capture-bytes {
       fail $exception-message
     })
     defer $capture-result[clean]
@@ -74,7 +84,7 @@ describe 'Capturing a block of commands to log' {
   }
 
   it 'should create a readable log file' {
-    var capture-result = (command:capture-to-log {
+    var capture-result = (command:capture-bytes {
       print Greetings!
     })
     defer $capture-result[clean]
@@ -85,7 +95,7 @@ describe 'Capturing a block of commands to log' {
 
   describe 'when capturing both stdout and stderr' {
     it 'should capture stdout' {
-      var capture-result = (command:capture-to-log {
+      var capture-result = (command:capture-bytes &stream=both {
         print TEST-OUT
       })
       defer $capture-result[clean]
@@ -95,7 +105,7 @@ describe 'Capturing a block of commands to log' {
     }
 
     it 'should capture stderr' {
-      var capture-result = (command:capture-to-log {
+      var capture-result = (command:capture-bytes &stream=both {
         print TEST-ERR >&2
       })
       defer $capture-result[clean]
@@ -107,7 +117,7 @@ describe 'Capturing a block of commands to log' {
 
   describe 'when capturing just stdout' {
     it 'should capture stdout' {
-      var capture-result = (command:capture-to-log &stderr=$false {
+      var capture-result = (command:capture-bytes &stream=out {
         print TEST-OUT
       })
       defer $capture-result[clean]
@@ -117,13 +127,48 @@ describe 'Capturing a block of commands to log' {
     }
 
     it 'should not capture stderr' {
-      var capture-result = (command:capture-to-log &stderr=$false {
-        echo TEST-ERR >&2
+      var capture-result = (command:capture-bytes &stream=out {
+        print TEST-ERR >&2
       })
       defer $capture-result[clean]
 
       $capture-result[get-log] |
         should-equal ''
+    }
+  }
+
+  describe 'when capturing just stderr' {
+    it 'should not capture stdout' {
+      var capture-result = (command:capture-bytes &stream=err {
+        print TEST-OUT
+      })
+      defer $capture-result[clean]
+
+      $capture-result[get-log] |
+        should-equal ''
+    }
+
+    it 'should capture stderr' {
+      var capture-result = (command:capture-bytes &stream=err {
+        print TEST-ERR >&2
+      })
+      defer $capture-result[clean]
+
+      $capture-result[get-log] |
+        should-equal 'TEST-ERR'
+    }
+  }
+
+  describe 'when passing an invalid stream value' {
+    it 'should fail' {
+      expect-fail {
+        command:capture-bytes &stream=INEXISTENT {}
+      } |
+        each { |e|
+          put $e[reason][content] |
+            str:contains (all) 'Invalid stream value' |
+            should-be $true
+        }
     }
   }
 }
@@ -149,7 +194,7 @@ describe 'Silencing a block' {
     it 'should fail as well' {
       var error-message = 'MEGA-BOOM!'
 
-      expect-crash {
+      expect-fail {
         command:silence {
           fail $error-message
         }

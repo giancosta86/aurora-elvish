@@ -50,7 +50,7 @@ fn should-be { |expected|
   }
 }
 
-fn expect-crash { |block|
+fn expect-fail { |block|
   try {
     $block
   } catch e {
@@ -60,8 +60,8 @@ fn expect-crash { |block|
   }
 }
 
-fn expect-log { |&partial=$false expected block|
-  var capture-result = (command:capture-to-log $block)
+fn expect-log { |&partial=$false &stream=both expected block|
+  var capture-result = (command:capture-bytes &stream=$stream $block)
 
   defer $capture-result[clean]
 

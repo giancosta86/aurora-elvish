@@ -1,21 +1,26 @@
 use os
 use ./console
 use ./files
+use ./map
 
 fn exists-in-bash { |command|
   eq $ok ?(bash -c 'type '$command > $os:dev-null 2>&1)
 }
 
-fn capture-to-log { |&stderr=$true block|
+fn capture-bytes { |&stream=both block|
   var log-path = (files:temp-path)
 
-  var outcome
+  var filtered-block = { $block | only-bytes }
 
-  if $stderr {
-    set outcome = ?({ { $block | only-bytes } > $log-path 2>&1 })
-  } else {
-    set outcome = ?({ { $block | only-bytes } > $log-path })
-  }
+  var redirected-block = (map:get-value [
+    &both={ put ?({ $filtered-block > $log-path 2>&1 }) }
+
+    &out={ put ?({ $filtered-block > $log-path 2>$os:dev-null }) }
+
+    &err={ put ?({ $filtered-block > $os:dev-null 2>$log-path }) }
+  ] $stream &default={ fail 'Invalid stream value: '$stream  })
+
+  var outcome = ($redirected-block)
 
   put [
     &outcome=$outcome
@@ -30,7 +35,7 @@ fn silence { |block|
 }
 
 fn silence-until-error { |&description=$nil block|
-  var capture-result = (capture-to-log $block)
+  var capture-result = (capture-bytes &stream=both $block)
   defer $capture-result[clean]
 
   if (not $capture-result[outcome]) {
