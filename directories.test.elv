@@ -15,7 +15,7 @@ describe 'The mkcd command' {
 
     it 'should create that directory and its parents' {
       os:is-dir (path:join $test-root $@components) |
-        should-be $true
+        should-be &strictly $true
     }
 
     it 'should move to that directory' {

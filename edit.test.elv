@@ -54,11 +54,11 @@ describe 'Editing a file via jq' {
     }
 
     has-beta |
-      should-be $true
+      should-be &strictly $true
 
     edit:json $path 'del(.beta)'
 
     has-beta |
-      should-be $false
+      should-be &strictly $false
   }
 }

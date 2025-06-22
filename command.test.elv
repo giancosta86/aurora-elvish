@@ -6,7 +6,7 @@ describe 'Testing whether a command exists in Bash' {
   describe 'if the command is a program in the path' {
     it 'should put $true' {
       command:exists-in-bash cat |
-        should-be $true
+        should-be &strictly $true
     }
   }
 
@@ -17,14 +17,14 @@ describe 'Testing whether a command exists in Bash' {
       echo 'alias '$test-alias'=''ls -l''' >> ~/.bashrc
 
       command:exists-in-bash cat |
-        should-be $true
+        should-be &strictly $true
     }
   }
 
   describe 'if the command does not exist' {
     it 'should put $false' {
       command:exists-in-bash INEXISTENT |
-        should-be $false
+        should-be &strictly $false
     }
   }
 }
@@ -37,7 +37,7 @@ describe 'Capturing the bytes from a block of commands' {
     defer $capture-result[clean]
 
     os:is-regular $capture-result[log-path] |
-      should-be $true
+      should-be &strictly $true
   }
 
   it 'should actually create the log file for stderr' {
@@ -47,7 +47,7 @@ describe 'Capturing the bytes from a block of commands' {
     defer $capture-result[clean]
 
     os:is-regular $capture-result[log-path] |
-      should-be $true
+      should-be &strictly $true
   }
 
   it 'should have a working cleaning method' {
@@ -58,7 +58,7 @@ describe 'Capturing the bytes from a block of commands' {
     $capture-result[clean]
 
     os:is-regular $capture-result[log-path] |
-      should-be $false
+      should-be &strictly $false
   }
 
   it 'should detect successful outcome' {
@@ -68,7 +68,7 @@ describe 'Capturing the bytes from a block of commands' {
     defer $capture-result[clean]
 
     put $capture-result[outcome] |
-      should-be $ok
+      should-be &strictly $ok
   }
 
   it 'should detect failed outcome' {
@@ -80,7 +80,7 @@ describe 'Capturing the bytes from a block of commands' {
     defer $capture-result[clean]
 
     put $capture-result[outcome][reason][content] |
-      should-be $exception-message
+      should-be &strictly $exception-message
   }
 
   it 'should create a readable log file' {
@@ -90,7 +90,7 @@ describe 'Capturing the bytes from a block of commands' {
     defer $capture-result[clean]
 
     slurp < $capture-result[log-path] |
-      should-equal Greetings!
+      should-be Greetings!
   }
 
   describe 'when capturing both stdout and stderr' {
@@ -101,7 +101,7 @@ describe 'Capturing the bytes from a block of commands' {
       defer $capture-result[clean]
 
       $capture-result[get-log] |
-        should-equal TEST-OUT
+        should-be TEST-OUT
     }
 
     it 'should capture stderr' {
@@ -111,7 +111,7 @@ describe 'Capturing the bytes from a block of commands' {
       defer $capture-result[clean]
 
       $capture-result[get-log] |
-        should-equal TEST-ERR
+        should-be TEST-ERR
     }
   }
 
@@ -123,7 +123,7 @@ describe 'Capturing the bytes from a block of commands' {
       defer $capture-result[clean]
 
       $capture-result[get-log] |
-        should-equal TEST-OUT
+        should-be TEST-OUT
     }
 
     it 'should not capture stderr' {
@@ -133,7 +133,7 @@ describe 'Capturing the bytes from a block of commands' {
       defer $capture-result[clean]
 
       $capture-result[get-log] |
-        should-equal ''
+        should-be ''
     }
   }
 
@@ -145,7 +145,7 @@ describe 'Capturing the bytes from a block of commands' {
       defer $capture-result[clean]
 
       $capture-result[get-log] |
-        should-equal ''
+        should-be ''
     }
 
     it 'should capture stderr' {
@@ -155,7 +155,7 @@ describe 'Capturing the bytes from a block of commands' {
       defer $capture-result[clean]
 
       $capture-result[get-log] |
-        should-equal 'TEST-ERR'
+        should-be 'TEST-ERR'
     }
   }
 
@@ -164,11 +164,8 @@ describe 'Capturing the bytes from a block of commands' {
       expect-crash {
         command:capture-bytes &stream=INEXISTENT {}
       } |
-        each { |e|
-          put $e[reason][content] |
-            str:contains (all) 'Invalid stream value' |
-            should-be $true
-        }
+        str:contains (all)[reason][content] 'Invalid stream value' |
+        should-be &strictly $true
     }
   }
 }
@@ -200,7 +197,7 @@ describe 'Silencing a block' {
         }
       } |
         str:contains (all)[reason][content] $error-message |
-        should-be $true
+        should-be &strictly $true
     }
   }
 }

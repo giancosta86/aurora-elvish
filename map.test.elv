@@ -6,7 +6,7 @@ describe 'Getting a value from a map' {
   describe 'when the key exists' {
     it 'should return the related value' {
       map:get-value $map b |
-        should-equal 30
+        should-be 30
     }
   }
 
@@ -14,7 +14,7 @@ describe 'Getting a value from a map' {
     describe 'when the default value is not passed' {
       it 'should return $nil' {
         map:get-value $map INEXISTING |
-          should-be $nil
+          should-be &strictly $nil
       }
     }
 
@@ -31,14 +31,14 @@ describe 'Getting the entries of a map' {
   describe 'when the map is empty' {
     it 'should put nothing' {
       put [(map:entries [&])] |
-        should-equal []
+        should-be []
     }
   }
 
   describe 'when the map has entries' {
     it 'should put each of them' {
       put [(map:entries [&a=90 &b=92 &c=95])] |
-        should-equal [[a 90] [b 92] [c 95]]
+        should-be [[a 90] [b 92] [c 95]]
     }
   }
 }
@@ -47,21 +47,21 @@ describe 'Merging maps' {
   describe 'when the maps are empty' {
     it 'should return an empty map' {
       map:merge [&] [&] [&] |
-        should-equal [&]
+        should-be [&]
     }
   }
 
   describe 'when the maps have no overlaps' {
     it 'should return a map containing all the keys' {
       map:merge [&a=90 &b=92] [&c=95 &d=98] [&e=99] |
-        should-equal [&a=90 &b=92 &c=95 &d=98 &e=99]
+        should-be [&a=90 &b=92 &c=95 &d=98 &e=99]
     }
   }
 
   describe 'when the maps have overlapping keys' {
     it 'should have keys from the rightmost map' {
       map:merge [&a=90 &b=92] [&c=95 &a=89] [&a=3 &c=32] |
-        should-equal [&a=3 &b=92 &c=32]
+        should-be [&a=3 &b=92 &c=32]
     }
   }
 }
@@ -78,7 +78,7 @@ describe 'Drilling down a map' {
   describe 'when the entire path exists' {
     it 'should return the value' {
       map:drill-down $test-map a b c |
-        should-be 90
+        should-be &strictly 90
     }
   }
 
@@ -88,14 +88,14 @@ describe 'Drilling down a map' {
         var test-default = 'Some default value'
 
         map:drill-down $test-map a INEXISTENT c &default=$test-default |
-          should-be $test-default
+          should-be &strictly $test-default
       }
     }
 
     describe 'if no default value is passed' {
       it 'should return $nil' {
         map:drill-down $test-map a INEXISTENT c |
-          should-be $nil
+          should-be &strictly $nil
       }
     }
   }

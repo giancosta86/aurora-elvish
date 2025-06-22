@@ -10,6 +10,6 @@ describe 'Retrieving a resource' {
     var license-content = (slurp < $license-path)
 
     str:contains $license-content Copyright |
-      should-be $true
+      should-be &strictly $true
   }
 }

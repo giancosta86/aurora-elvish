@@ -17,35 +17,33 @@ fn -print-expected-and-actual { |inputs|
   pprint $actual
 }
 
-fn should-equal { |expected|
+fn should-be { |&strictly=$false expected|
   one | each { |actual|
-    var expected-string = (to-string $expected)
-    var actual-string = (to-string $actual)
+    if $strictly {
+      if (not-eq $expected $actual) {
+        -print-expected-and-actual [
+          &expected-description='Expected'
+          &expected=$expected
+          &actual-description='Actual'
+          &actual=$actual
+        ]
 
-    if (not-eq $expected-string $actual-string) {
-      -print-expected-and-actual [
-        &expected-description='Expected string'
-        &expected=$expected-string
-        &actual-description='Actual string'
-        &actual=$actual-string
-      ]
+        fail 'strict should-be assertion failed'
+      }
+    } else {
+      var expected-string = (to-string $expected)
+      var actual-string = (to-string $actual)
 
-      fail 'should-equal assertion failed'
-    }
-  }
-}
+      if (not-eq $expected-string $actual-string) {
+        -print-expected-and-actual [
+          &expected-description='Expected string'
+          &expected=$expected-string
+          &actual-description='Actual string'
+          &actual=$actual-string
+        ]
 
-fn should-be { |expected|
-  one | each { |actual|
-    if (not-eq $expected $actual) {
-      -print-expected-and-actual [
-        &expected-description='Expected'
-        &expected=$expected
-        &actual-description='Actual'
-        &actual=$actual
-      ]
-
-      fail 'should-be assertion failed'
+        fail 'should-be assertion failed'
+      }
     }
   }
 }
@@ -76,7 +74,7 @@ fn expect-log { |&partial=$false &stream=both expected block|
         &actual=$log
       ]
 
-      fail 'should-be (&partial) assertion failed'
+      fail 'expect-log (&partial) assertion failed'
     }
   } else {
     if (not-eq $log $expected) {
@@ -87,7 +85,7 @@ fn expect-log { |&partial=$false &stream=both expected block|
         &actual=$log
       ]
 
-      fail 'should-be assertion failed'
+      fail 'expect-log assertion failed'
     }
   }
 }

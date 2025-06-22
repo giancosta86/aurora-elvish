@@ -5,14 +5,14 @@ describe 'Is-empty test' {
     describe 'when the list is empty' {
       it 'should put $true' {
         seq:is-empty [] |
-          should-be $true
+          should-be &strictly $true
       }
     }
 
     describe 'when the list is not empty' {
       it 'should put $false' {
         seq:is-empty [A B C] |
-          should-be $false
+          should-be &strictly $false
       }
     }
   }
@@ -21,14 +21,14 @@ describe 'Is-empty test' {
     describe 'when the string is empty' {
       it 'should put $true' {
         seq:is-empty '' |
-          should-be $true
+          should-be &strictly $true
       }
     }
 
     describe 'when the string is not empty' {
       it 'should put $false' {
         seq:is-empty 'Hello' |
-          should-be $false
+          should-be &strictly $false
       }
     }
   }
@@ -39,14 +39,14 @@ describe 'Is-non-empty test' {
     describe 'when the list is empty' {
       it 'should put $false' {
         seq:is-non-empty [] |
-          should-be $false
+          should-be &strictly $false
       }
     }
 
     describe 'when the list is not empty' {
       it 'should put $true' {
         seq:is-non-empty [A B C] |
-          should-be $true
+          should-be &strictly $true
       }
     }
   }
@@ -55,14 +55,14 @@ describe 'Is-non-empty test' {
     describe 'when the string is empty' {
       it 'should put $false' {
         seq:is-non-empty '' |
-          should-be $false
+          should-be &strictly $false
       }
     }
 
     describe 'when the string is not empty' {
       it 'should put $true' {
         seq:is-non-empty 'World' |
-          should-be $true
+          should-be &strictly $true
       }
     }
   }
@@ -86,7 +86,7 @@ describe 'Enumerating' {
       }
 
       put $current-result |
-        should-be '0:A; 1:B; 2:C; '
+        should-be &strictly '0:A; 1:B; 2:C; '
     }
   }
 }
@@ -107,7 +107,7 @@ describe 'Iterating and spreading as consumer arguments' {
       )]
 
       put $mapped-items |
-        should-equal [a+b=90 x+y=92]
+        should-be [a+b=90 x+y=92]
     }
   }
 }
@@ -116,28 +116,28 @@ describe 'Reduction' {
   describe 'when the sequence is empty' {
     it 'should return the initial value' {
       all [] | seq:reduce 0 $'+~' |
-        should-equal 0
+        should-be 0
     }
   }
 
   describe 'when the sequence has one item' {
     it 'should apply the operator' {
       all [92] | seq:reduce 0 $'+~' |
-        should-equal 92
+        should-be 92
     }
   }
 
   describe 'when the sequence has two items' {
     it 'should apply the operator' {
       all [82 13] | seq:reduce 0 $'+~' |
-        should-equal 95
+        should-be 95
     }
   }
 
   describe 'when the sequence has three items' {
     it 'should apply the operator' {
       all [65 25 8] | seq:reduce 0 $'+~' |
-        should-equal 98
+        should-be 98
     }
   }
 
@@ -149,6 +149,6 @@ describe 'Reduction' {
 
       + $left $right
     } |
-      should-equal 90
+      should-be 90
   }
 }

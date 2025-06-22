@@ -16,19 +16,19 @@ describe 'Parsing a semver' {
           var semver = (semver:parse $source)
 
           put $semver[major] |
-            should-equal $major
+            should-be $major
 
           put $semver[minor] |
-            should-equal $minor
+            should-be $minor
 
           put $semver[patch] |
-            should-equal $patch
+            should-be $patch
 
           put $semver[pre-release] |
-            should-equal $pre-release
+            should-be $pre-release
 
           put $semver[build] |
-            should-equal $build
+            should-be $build
         }
       }
 
@@ -37,19 +37,19 @@ describe 'Parsing a semver' {
           var semver = (semver:parse 'v'$source)
 
           put $semver[major] |
-            should-equal $major
+            should-be $major
 
           put $semver[minor] |
-            should-equal $minor
+            should-be $minor
 
           put $semver[patch] |
-            should-equal $patch
+            should-be $patch
 
           put $semver[pre-release] |
-            should-equal $pre-release
+            should-be $pre-release
 
           put $semver[build] |
-            should-equal $build
+            should-be $build
         }
       }
     }
@@ -61,23 +61,23 @@ describe 'Parsing a semver' {
 
     it 'should have the major component' {
       put $semver[major] |
-        should-equal $major
+        should-be $major
     }
 
     it 'should have minor and patch set to 0' {
       put $semver[minor] |
-        should-equal 0
+        should-be 0
 
       put $semver[patch] |
-        should-equal 0
+        should-be 0
     }
 
     it 'should have pre-release and build set to $nil' {
       put $semver[pre-release] |
-        should-be $nil
+        should-be &strictly $nil
 
       put $semver[build] |
-        should-be $nil
+        should-be &strictly $nil
     }
   }
 }

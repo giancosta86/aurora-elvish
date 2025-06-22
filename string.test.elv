@@ -5,14 +5,14 @@ describe 'Converting empty string to default' {
     describe 'when passing a default value' {
       it 'should put the default value' {
         string:empty-to-default &default=90 '' |
-          should-equal 90
+          should-be 90
       }
     }
 
     describe 'when not passing a default value' {
       it 'should put $nil' {
         string:empty-to-default '' |
-          should-be $nil
+          should-be &strictly $nil
       }
     }
   }
@@ -33,7 +33,7 @@ describe 'Converting empty string to default' {
       describe 'when no default value is passed' {
         it 'should put $nil' {
           string:empty-to-default &trim $string-with-spaces |
-            should-be $nil
+            should-be &strictly $nil
         }
       }
     }

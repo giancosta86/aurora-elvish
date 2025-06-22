@@ -6,14 +6,14 @@ describe 'Arithmetic' {
       echo Testing addition...
 
       + 90 2 |
-        should-equal 92
+        should-be 92
     }
   }
 
   describe 'division' {
     it 'should work' {
       / 90 10 |
-        should-equal 9
+        should-be 9
     }
 
     describe 'when dividing by zero' {
@@ -30,7 +30,7 @@ describe 'Arithmetic' {
         each { |e|
           str:contains (to-string $e[reason]) divisor
         } |
-        should-be $true
+        should-be &strictly $true
       }
     }
   }

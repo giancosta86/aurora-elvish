@@ -55,7 +55,6 @@ fn create { |&allow-crash=$false|
     &it~=$it~
     &fail-test~=$fail-test~
     &should-be~=$assertions:should-be~
-    &should-equal~=$assertions:should-equal~
     &expect-crash~=$assertions:expect-crash~
     &expect-log~=$assertions:expect-log~
     &get-passed~={ put $passed }

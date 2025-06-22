@@ -12,7 +12,7 @@ describe 'Requesting a temp path' {
 
       path:base $temp-path |
         str:has-prefix (all) $default-prefix |
-        should-be $true
+        should-be &strictly $true
     }
   }
 
@@ -25,13 +25,13 @@ describe 'Requesting a temp path' {
     it 'should have the requested prefix' {
       path:base $temp-path |
         str:has-prefix (all) $custom-prefix |
-        should-be $true
+        should-be &strictly $true
     }
 
     it 'should have the requested suffix' {
       path:base $temp-path |
         str:has-suffix (all) $custom-suffix |
-        should-be $true
+        should-be &strictly $true
     }
   }
 }
@@ -46,7 +46,7 @@ describe 'Preserving file state' {
       }
 
       os:is-regular $test-file |
-        should-be $true
+        should-be &strictly $true
     }
   }
 
@@ -59,7 +59,7 @@ describe 'Preserving file state' {
       }
 
       os:is-regular $test-file |
-        should-be $false
+        should-be &strictly $false
     }
   }
 }
