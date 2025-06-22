@@ -1,15 +1,15 @@
 use ../lang
 use ./namespace
 
-var -test-extension = .test.elv
+var -default-file-selector = '**[type:regular][nomatch-ok].test.elv'
 
-fn -get-test-files {
-  put **[type:regular][nomatch-ok]$-test-extension
+fn -get-test-files { |file-selector|
+  eval 'put '$file-selector
 }
 
-fn has-tests {
+fn has-tests { |&file-selector=$-default-file-selector|
   var first-file = (
-    -get-test-files |
+    -get-test-files $file-selector |
       take 1 |
       lang:ensure-put
   )
@@ -31,12 +31,12 @@ fn run-file { |&allow-crash=$false path|
   ]
 }
 
-fn run { |&allow-crash=$false|
+fn run { |&allow-crash=$false &file-selector=$-default-file-selector|
   var total-tests = 0
   var total-failed = 0
 
   var file-results = (
-    -get-test-files |
+    -get-test-files $file-selector |
       each { |test-file-path|
         var file-result = (run-file &allow-crash=$allow-crash $test-file-path)
 
@@ -62,8 +62,8 @@ fn run { |&allow-crash=$false|
   ]
 }
 
-fn test { |&allow-crash=$false|
+fn test { |&file-selector=$-default-file-selector &display-list=$false &allow-crash=$false|
   clear
 
-  pprint (run &allow-crash=$allow-crash)
+  pprint (run &allow-crash=$allow-crash &file-selector=$file-selector)
 }

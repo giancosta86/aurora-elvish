@@ -13,7 +13,7 @@ describe 'Arithmetic' {
   describe 'division' {
     it 'should work' {
       / 90 10 |
-        should-be 9
+        should-be (num 9)
     }
 
     describe 'when dividing by zero' {
