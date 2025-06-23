@@ -17,6 +17,22 @@ fn of { |first @additional|
     from
 }
 
+fn is-empty { |hash-set|
+  == 0 (keys $hash-set |
+    take 1 |
+    count)
+}
+
+fn is-non-empty { |hash-set|
+  != 0 (keys $hash-set |
+    take 1 |
+    count)
+}
+
+fn to-list {
+  put [(keys (one))]
+}
+
 fn contains { |hash-set item|
   has-key $hash-set $item
 }
@@ -42,20 +58,20 @@ fn union { |source @operands|
     }
 }
 
-fn difference { |source @subtrahends|
-  all $subtrahends |
-    seq:reduce $source { |accumulator subtrahend|
-      map:filter $accumulator { |key _|
-        not (has-key $subtrahend $key)
-      }
-    }
-}
-
 fn intersection { |source @operands|
   all $operands |
     seq:reduce $source { |accumulator operand|
       map:filter $accumulator { |key _|
         has-key $operand $key
+      }
+    }
+}
+
+fn difference { |source @subtrahends|
+  all $subtrahends |
+    seq:reduce $source { |accumulator subtrahend|
+      map:filter $accumulator { |key _|
+        not (has-key $subtrahend $key)
       }
     }
 }
