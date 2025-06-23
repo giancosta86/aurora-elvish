@@ -39,3 +39,13 @@ fn drill-down { |&default=$nil source @properties|
 
   put $current-source
 }
+
+fn filter { |source key-value-predicate|
+  entries $source |
+    seq:each-spread { |key value|
+      if ($key-value-predicate $key $value) {
+        put [$key $value]
+      }
+    } |
+    make-map
+}

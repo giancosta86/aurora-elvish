@@ -1,7 +1,21 @@
 use os
 use str
 use ../command
+use ../hash-set
 use ./assertions
+
+fn -create-describe-context {
+  var describe-descriptions = (hash-set:empty)
+  var it-descriptions = (hash-set:empty)
+
+  put [
+    &add-describe={ |description|
+      if (has-key $describe-descriptions $description) {
+        fail 'A describe block with description '''$description''' exists in the same block!'
+      }
+    }
+  ]
+}
 
 fn create { |&allow-crash=$false|
   var description-path = []

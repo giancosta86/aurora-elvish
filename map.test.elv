@@ -100,3 +100,18 @@ describe 'Drilling down a map' {
     }
   }
 }
+
+describe 'Filter' {
+  it 'should work' {
+    var source = [
+      &a=90
+      &b=92
+      &c=98
+    ]
+
+    map:filter $source { |key value|
+      put (and (> $value 90) (!=s $key c))
+    } |
+      should-be [&b=92]
+  }
+}
