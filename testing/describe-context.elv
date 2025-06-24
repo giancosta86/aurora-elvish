@@ -4,6 +4,7 @@ use ../console
 use ../lang
 use ../map
 use ../seq
+use ./indentation
 
 fn create { |path|
   var test-outcomes = [&]
@@ -13,30 +14,26 @@ fn create { |path|
     str:join ' -> ' [$@path $description]
   }
 
-  fn get-indentation { |steps|
-    str:repeat ' ' (* 2 $steps)
-  }
-
   fn display-tree {
     var level = (count $path)
 
     if (> $level 0) {
-      var indentation = (get-indentation (- $level 1))
+      indentation:print (- $level 1)
 
       var description = $path[-1]
 
-      console:echo (styled $indentation''$description white bold)
+      console:echo (styled $description white bold)
     }
 
     map:entries &ordered $test-outcomes |
       seq:each-spread { |description outcome|
-        var is-test-ok = (eq $outcome $ok)
+        indentation:print $level
 
-        var indentation = (get-indentation $level)
+        var is-test-ok = (eq $outcome $ok)
         var color = (lang:ternary $is-test-ok green red)
         var emoji = (lang:ternary $is-test-ok ✅ ❌)
 
-        console:echo (styled $indentation''$description $color bold) $emoji
+        console:echo (styled $description $color bold) $emoji
       }
 
     map:entries &ordered $sub-contexts |
