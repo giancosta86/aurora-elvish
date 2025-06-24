@@ -1,3 +1,4 @@
+use builtin
 use ./seq
 
 fn get-value { |&default=$nil source key|
@@ -8,8 +9,17 @@ fn get-value { |&default=$nil source key|
   }
 }
 
-fn entries { |source|
-  keys $source | each { |key|
+fn keys { |&ordered=$false map|
+  if $ordered {
+    builtin:keys $map |
+      order
+  } else {
+    builtin:keys $map
+  }
+}
+
+fn entries { |&ordered=$false source|
+  keys &ordered=$ordered $source | each { |key|
     put [$key $source[$key]]
   }
 }

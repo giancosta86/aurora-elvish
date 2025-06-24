@@ -1,3 +1,4 @@
+use ../console
 use ../lang
 use ./namespace
 
@@ -17,53 +18,43 @@ fn has-tests { |&file-selector=$-default-file-selector|
   not-eq $first-file $nil
 }
 
-fn run-file { |&allow-crash=$false path|
-  var test-namespace = (namespace:create &allow-crash=$allow-crash)
-
+fn run-file { |&allow-crash=$false path test-namespace|
   var source-string = (slurp < $path)
 
   eval &ns=$test-namespace $source-string
-
-  put [
-    &path=$path
-    &passed=($test-namespace[get-passed~])
-    &failed=($test-namespace[get-failed~])
-  ]
 }
 
 fn run { |&allow-crash=$false &file-selector=$-default-file-selector|
-  var total-tests = 0
-  var total-failed = 0
+  var namespace-controller = (namespace:create &allow-crash=$allow-crash)
+  var test-namespace = $namespace-controller[namespace]
 
-  var file-results = (
-    -get-test-files $file-selector |
-      each { |test-file-path|
-        var file-result = (run-file &allow-crash=$allow-crash $test-file-path)
+  -get-test-files $file-selector |
+    each { |test-file-path|
+      run-file &allow-crash=$allow-crash $test-file-path $test-namespace
+    }
 
-        set total-tests = (+ $total-tests $file-result[passed] $file-result[failed])
-        set total-failed = (+ $total-failed $file-result[failed])
-
-        put [
-          $file-result[path]
-          [
-            &passed=$file-result[passed]
-            &failed=$file-result[failed]
-          ]
-        ]
-      } |
-      make-map
-    )
-
-  put [
-    &is-ok=(== $total-failed 0)
-    &total-tests=$total-tests
-    &total-failed=$total-failed
-    &file-results=$file-results
-  ]
+  put $namespace-controller
 }
 
-fn test { |&file-selector=$-default-file-selector &display-list=$false &allow-crash=$false|
+fn test { |&file-selector=$-default-file-selector &display-tree=$false &allow-crash=$false|
   clear
 
-  pprint (run &allow-crash=$allow-crash &file-selector=$file-selector)
+  var namespace-controller = (run &allow-crash=$allow-crash &file-selector=$file-selector)
+  var results = ($namespace-controller[get-results])
+
+  console:echo
+
+  if $display-tree {
+    console:section &emoji=📋 (styled 'Test outcomes' blue bold) {
+      $namespace-controller[display-tree]
+    }
+  }
+
+  if $results[is-ok] {
+    var message = 'All the '$results[total-tests]' tests passed.'
+    console:echo (styled $message green bold)
+  } else {
+    var message = 'Failed tests: '$results[total-failed]' out of '$results[total-tests]'.'
+    console:echo (styled $message red bold)
+  }
 }

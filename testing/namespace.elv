@@ -1,58 +1,28 @@
-use os
-use str
-use ../command
-use ../hash-set
 use ./assertions
-
-fn -create-describe-context {
-  var describe-descriptions = (hash-set:empty)
-  var it-descriptions = (hash-set:empty)
-
-  put [
-    &add-describe={ |description|
-      if (has-key $describe-descriptions $description) {
-        fail 'A describe block with description '''$description''' exists in the same block!'
-      }
-    }
-  ]
-}
+use ./describe-context
 
 fn create { |&allow-crash=$false|
-  var description-path = []
+  var total-tests = 0
+  var total-failed = 0
+
   var test-closures = []
 
-  var passed = 0
-  var failed = 0
-
-  fn get-full-description { |description|
-    var full-description-components = [$@description-path $description]
-    str:join ' -> ' $full-description-components
-  }
+  var root-describe-context = (describe-context:create [])
+  var current-describe-context = $root-describe-context
 
   fn describe { |description block|
-    tmp description-path = [$@description-path $description]
+    tmp current-describe-context = ($current-describe-context[ensure-describe] $description)
 
     $block
   }
 
   fn it { |description block|
-    var full-description = (get-full-description $description)
+    set total-tests = (+ $total-tests 1)
 
-    var test-outcome = ?(
-      command:silence-until-error &description=(styled $full-description red bold) {
-        try {
-          $block
-        } catch e {
-          pprint $e
-          fail $e
-        }
-      }
-    )
+    var test-outcome = ($current-describe-context[run-test] $description $block)
 
-    if $test-outcome {
-      set passed = (+ $passed 1)
-    } else {
-      set failed = (+ $failed 1)
+    if (not $test-outcome) {
+      set total-failed = (+ $total-failed 1)
 
       if $allow-crash {
         fail $test-outcome
@@ -64,14 +34,31 @@ fn create { |&allow-crash=$false|
     fail 'TEST SET TO FAIL'
   }
 
-  ns [
+  var namespace = (ns [
     &describe~=$describe~
     &it~=$it~
     &fail-test~=$fail-test~
     &should-be~=$assertions:should-be~
     &expect-crash~=$assertions:expect-crash~
     &expect-log~=$assertions:expect-log~
-    &get-passed~={ put $passed }
-    &get-failed~={ put $failed }
+  ])
+
+  fn get-results {
+    put [
+      &is-ok=(== $total-failed 0)
+      &total-tests=$total-tests
+      &total-failed=$total-failed
+      &total-passed=(- $total-tests $total-failed)
+    ]
+  }
+
+  fn display-tree {
+    $root-describe-context[display-tree]
+  }
+
+  put [
+    &namespace=$namespace
+    &get-results=$get-results~
+    &display-tree=$display-tree~
   ]
 }

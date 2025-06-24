@@ -27,6 +27,24 @@ describe 'Getting a value from a map' {
   }
 }
 
+describe 'Getting the keys of a map' {
+  describe 'when ordered' {
+    it 'should return the ordered keys' {
+      map:keys &ordered [&V=1 &B=90 &T=92 &A=95 &S=98] |
+        put [(all)] |
+        should-be [A B S T V]
+    }
+  }
+
+  describe 'when not ordered' {
+    it 'should just return a list of the expected size' {
+      map:keys [&V=1 &B=90 &T=92 &A=95 &S=98] |
+        count |
+        should-be 5
+    }
+  }
+}
+
 describe 'Getting the entries of a map' {
   describe 'when the map is empty' {
     it 'should put nothing' {
