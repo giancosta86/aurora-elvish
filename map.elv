@@ -24,6 +24,11 @@ fn entries { |&ordered=$false source|
   }
 }
 
+fn values { |map|
+  entries $map |
+    seq:each-spread { |_ value| put $value }
+}
+
 fn merge { |@sources|
   all $sources |
     each $entries~ |

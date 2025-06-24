@@ -1,6 +1,7 @@
 use os
 use str
 use ../command
+use ../console
 use ../lang
 
 fn -print-expected-and-actual { |inputs|
@@ -10,11 +11,11 @@ fn -print-expected-and-actual { |inputs|
   var actual-description = $inputs[actual-description]
   var actual = $inputs[actual]
 
-  print (styled $expected-description': ' green bold)
-  pprint $expected
+  console:print (styled $expected-description': ' green bold)
+  console:pprint $expected
 
-  print (styled $actual-description': ' red bold)
-  pprint $actual
+  console:print (styled $actual-description': ' red bold)
+  console:pprint $actual
 }
 
 fn should-be { |&strict=$false expected|

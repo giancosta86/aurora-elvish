@@ -1,22 +1,41 @@
+use ../console
+use ../map
 use ./assertions
 use ./describe-context
+use ./describe-context-map dcm
 
 fn create { |&allow-crash=$false|
   var total-tests = 0
   var total-failed = 0
 
-  var test-closures = []
-
-  var root-describe-context = (describe-context:create [])
-  var current-describe-context = $root-describe-context
+  var root-describe-contexts = [&]
+  var current-describe-context = $nil
 
   fn describe { |description block|
-    tmp current-describe-context = ($current-describe-context[ensure-describe] $description)
+    var coming-describe-context = (
+      if $current-describe-context {
+        $current-describe-context[ensure-sub-context] $description
+      } else {
+        var ensure-result = (
+          dcm:ensure $root-describe-contexts $description $describe-context:create-root~
+        )
+
+        set root-describe-contexts = $ensure-result[updated-map]
+
+        put $ensure-result[context]
+      }
+    )
+
+    tmp current-describe-context = $coming-describe-context
 
     $block
   }
 
   fn it { |description block|
+    if (not $current-describe-context) {
+      fail 'Tests must be declared via "it" blocks within a hierarchy of "declare" blocks!'
+    }
+
     set total-tests = (+ $total-tests 1)
 
     var test-outcome = ($current-describe-context[run-test] $description $block)
@@ -52,13 +71,13 @@ fn create { |&allow-crash=$false|
     ]
   }
 
-  fn display-tree {
-    $root-describe-context[display-tree]
+  fn get-outcome-trees {
+    dcm:get-outcome-trees $root-describe-contexts
   }
 
   put [
     &namespace=$namespace
     &get-results=$get-results~
-    &display-tree=$display-tree~
+    &get-outcome-trees=$get-outcome-trees~
   ]
 }

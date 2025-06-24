@@ -10,7 +10,7 @@ describe 'Getting a value from a map' {
     }
   }
 
-  describe 'then the key does not exist' {
+  describe 'when the key does not exist' {
     describe 'when the default value is not passed' {
       it 'should return $nil' {
         map:get-value $map INEXISTING |
@@ -57,6 +57,25 @@ describe 'Getting the entries of a map' {
     it 'should put each of them' {
       put [(map:entries [&a=90 &b=92 &c=95])] |
         should-be [[a 90] [b 92] [c 95]]
+    }
+  }
+}
+
+describe 'Getting the values of a map' {
+  describe 'when the map is empty' {
+    it 'should return an empty list' {
+      map:values [&] |
+        put [(all)] |
+        should-be []
+    }
+  }
+
+  describe 'when the map has entries' {
+    it 'should return the values' {
+      map:values [&X90=B &X92=T &X95=A &X98=S] |
+        order |
+        put [(all)] |
+        should-be [A B S T]
     }
   }
 }

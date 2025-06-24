@@ -1,6 +1,8 @@
 use ../console
 use ../lang
+use ../seq
 use ./namespace
+use ./reporting/cli
 
 var -default-file-selector = '**[type:regular][nomatch-ok].test.elv'
 
@@ -36,21 +38,23 @@ fn run { |&allow-crash=$false &file-selector=$-default-file-selector|
   put $namespace-controller
 }
 
-fn test { |&file-selector=$-default-file-selector &display-tree=$false &allow-crash=$false|
+fn test { |&file-selector=$-default-file-selector &tree-reporters=[$cli:display~] &allow-crash=$false|
   clear
 
   var namespace-controller = (run &allow-crash=$allow-crash &file-selector=$file-selector)
-  var results = ($namespace-controller[get-results])
 
-  if $display-tree {
-    console:echo
+  if (seq:is-non-empty $tree-reporters) {
 
-    console:section &emoji=📋 (styled 'Test outcomes' blue bold) {
-      $namespace-controller[display-tree]
+    var outcome-trees = ($namespace-controller[get-outcome-trees])
+
+    all $tree-reporters | each { |reporter|
+      $reporter $outcome-trees
     }
   }
 
   console:echo
+
+  var results = ($namespace-controller[get-results])
 
   if $results[is-ok] {
     var message = 'All the '$results[total-tests]' tests passed.'

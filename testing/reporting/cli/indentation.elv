@@ -1,5 +1,5 @@
 use str
-use ../console
+use ../../../console
 
 var -level-chars = 4
 

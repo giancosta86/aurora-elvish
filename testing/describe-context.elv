@@ -4,61 +4,50 @@ use ../console
 use ../lang
 use ../map
 use ../seq
-use ./indentation
+use ./describe-context-map dcm
 
-fn create { |path|
-  var test-outcomes = [&]
+fn -create { |path|
+  var description = $path[-1]
+  var outcomes = [&]
   var sub-contexts = [&]
 
   fn format-path { |description|
     str:join ' -> ' [$@path $description]
   }
 
-  fn display-tree {
-    var level = (count $path)
+  fn get-outcome-tree {
 
-    if (> $level 0) {
-      indentation:print (- $level 1)
 
-      var description = $path[-1]
+    put [
+      &description=$description
 
-      console:echo (styled $description white bold)
-    }
+      &tests=(
+        map:entries $outcomes |
+        seq:each-spread { |test-description outcome|
+          put [
+            &description=$test-description
+            &outcome=$outcome
+          ]
+        } |
+        put [(all)]
+      )
 
-    map:entries &ordered $test-outcomes |
-      seq:each-spread { |description outcome|
-        indentation:print $level
-
-        var is-test-ok = (eq $outcome $ok)
-        var color = (lang:ternary $is-test-ok green red)
-        var emoji = (lang:ternary $is-test-ok ✅ ❌)
-
-        console:echo (styled $description $color bold) $emoji
-      }
-
-    map:entries &ordered $sub-contexts |
-      seq:each-spread { |_ sub-context|
-        $sub-context[display-tree]
-      }
+      &sub-contexts=(dcm:get-outcome-trees $sub-contexts)
+    ]
   }
 
   put [
-    &ensure-describe={ |description|
-      if (not (has-key $sub-contexts $description)) {
-        var new-context = (create [$@path $description])
+    &ensure-sub-context={ |description|
+      var ensure-result = (
+        dcm:ensure $sub-contexts $description { |description| -create [$@path $description] }
+      )
 
-        set sub-contexts = (assoc $sub-contexts $description $new-context)
-      }
-
-      put $sub-contexts[$description]
+      set sub-contexts = $ensure-result[updated-map]
+      put $ensure-result[context]
     }
 
     &run-test={ |description block|
-      if (seq:is-empty $path) {
-        fail 'Tests can only be run within describe {} blocks!'
-      }
-
-      if (has-key $test-outcomes $description) {
+      if (has-key $outcomes $description) {
         fail 'Duplicated test: '(format-path $description)
       }
 
@@ -73,11 +62,15 @@ fn create { |path|
         }
       )
 
-      set test-outcomes = (assoc $test-outcomes $description $outcome)
+      set outcomes = (assoc $outcomes $description $outcome)
 
       put $outcome
     }
 
-    &display-tree=$display-tree~
+    &get-outcome-tree=$get-outcome-tree~
   ]
+}
+
+fn create-root { |description|
+  -create [$description]
 }
