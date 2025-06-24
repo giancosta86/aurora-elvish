@@ -42,13 +42,15 @@ fn test { |&file-selector=$-default-file-selector &display-tree=$false &allow-cr
   var namespace-controller = (run &allow-crash=$allow-crash &file-selector=$file-selector)
   var results = ($namespace-controller[get-results])
 
-  console:echo
-
   if $display-tree {
+    console:echo
+
     console:section &emoji=📋 (styled 'Test outcomes' blue bold) {
       $namespace-controller[display-tree]
     }
   }
+
+  console:echo
 
   if $results[is-ok] {
     var message = 'All the '$results[total-tests]' tests passed.'
