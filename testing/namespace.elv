@@ -2,7 +2,6 @@ use ../console
 use ../map
 use ./assertions
 use ./describe-context
-use ./describe-context-map dcm
 
 fn create { |&allow-crash=$false|
   var total-tests = 0
@@ -17,7 +16,7 @@ fn create { |&allow-crash=$false|
         $current-describe-context[ensure-sub-context] $description
       } else {
         var ensure-result = (
-          dcm:ensure $root-describe-contexts $description $describe-context:create-root~
+          describe-context:ensure-in-map $root-describe-contexts $description $describe-context:create-root~
         )
 
         set root-describe-contexts = $ensure-result[updated-map]
@@ -71,13 +70,13 @@ fn create { |&allow-crash=$false|
     ]
   }
 
-  fn get-outcome-trees {
-    dcm:get-outcome-trees $root-describe-contexts
+  fn get-outcome-map {
+    describe-context:get-outcome-map $root-describe-contexts
   }
 
   put [
     &namespace=$namespace
     &get-results=$get-results~
-    &get-outcome-trees=$get-outcome-trees~
+    &get-outcome-map=$get-outcome-map~
   ]
 }

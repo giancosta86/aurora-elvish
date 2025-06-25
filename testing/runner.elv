@@ -38,17 +38,18 @@ fn run { |&allow-crash=$false &file-selector=$-default-file-selector|
   put $namespace-controller
 }
 
-fn test { |&file-selector=$-default-file-selector &tree-reporters=[$cli:display~] &allow-crash=$false|
+fn test { |&file-selector=$-default-file-selector &reporters=[$cli:display~] &allow-crash=$false|
   clear
 
   var namespace-controller = (run &allow-crash=$allow-crash &file-selector=$file-selector)
 
-  if (seq:is-non-empty $tree-reporters) {
+  if (seq:is-non-empty $reporters) {
 
-    var outcome-trees = ($namespace-controller[get-outcome-trees])
+    var outcome-map = ($namespace-controller[get-outcome-map])
 
-    all $tree-reporters | each { |reporter|
-      $reporter $outcome-trees
+    all $reporters | each { |reporter|
+      console:echo
+      $reporter $outcome-map
     }
   }
 
