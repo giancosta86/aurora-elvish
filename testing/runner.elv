@@ -51,7 +51,7 @@ fn run { |&file-selector=$-default-file-selector &reporters=[$cli:display~] &all
   ]
 }
 
-fn test { |&file-selector=$-default-file-selector &reporters=[$cli:display~] &allow-crash=$false &clear=$true|
+fn test { |&file-selector=$-default-file-selector &reporters=[$cli:display~] &allow-crash=$false &clear=$true &output-failures=$false|
   if $clear {
     clear
   }
@@ -66,5 +66,9 @@ fn test { |&file-selector=$-default-file-selector &reporters=[$cli:display~] &al
   } else {
     var message = 'Failed tests: '$stats[total-failed]' out of '$stats[total-tests]'.'
     console:echo (styled $message red bold)
+  }
+
+  if $output-failures {
+    put $stats[total-failed]
   }
 }
