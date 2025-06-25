@@ -8,7 +8,7 @@ use ../string
 fn -detect-from-package-json {
   var version = (
     jq -r '.engines.node // ""' package.json |
-      string:empty-to-default
+      string:empty-to-default (all)
   )
 
   if $version {
@@ -24,7 +24,7 @@ fn -detect-from-nvmrc {
   if (os:is-regular .nvmrc) {
     var version = (
       slurp < .nvmrc |
-        string:empty-to-default
+        string:empty-to-default (all)
       )
 
     console:inspect 'Requested version in the .nvmrc file' $version
