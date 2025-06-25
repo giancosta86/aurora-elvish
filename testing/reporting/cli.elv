@@ -7,8 +7,12 @@ use ./cli/indentation
 
 var -display-outcome-trees~
 
+fn -print-indentation { |level|
+  console:print (str:repeat ' ' (* $level 4))
+}
+
 fn -display-node { |node level|
-  indentation:print $level
+  -print-indentation $level
   console:echo (styled $node[description] white bold)
 
   all $node[tests] |
@@ -18,7 +22,7 @@ fn -display-node { |node level|
       var color = (lang:ternary $is-ok green red)
       var emoji = (lang:ternary $is-ok ✅ ❌)
 
-      indentation:print (+ $level 1)
+      -print-indentation (+ $level 1)
       console:echo (styled $test[description] $color bold) $emoji
     }
 
