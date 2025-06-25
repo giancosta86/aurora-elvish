@@ -12,4 +12,5 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - uses: giancosta86/aurora-github/actions/check-elvish-library@v11
+
+      - uses: giancosta86/aurora-github/actions/verify-elvish-library@v11
