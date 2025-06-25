@@ -54,3 +54,19 @@ fn mkcd { |&perm=0o755 @components|
 
   cd $actual-path
 }
+
+fn -with-temp-object { |temp-path-factory|
+  put { |consumer|
+    var temp-path = ($temp-path-factory)
+
+    try {
+      $consumer $temp-path
+    } finally {
+      rimraf $temp-path
+    }
+  }
+}
+
+var with-temp-file~ = (-with-temp-object $temp-file-path~)
+
+var with-temp-dir~ = (-with-temp-object $os:temp-dir~)

@@ -276,3 +276,43 @@ describe 'The mkcd command' {
     }
   }
 }
+
+describe 'Consuming a temp file path' {
+  it 'should make the temp path available' {
+    fs:with-temp-file { |temp-path|
+      os:is-regular $temp-path |
+        should-be $true
+    }
+  }
+
+  it 'should delete the temp path in the end' {
+    var actual-path
+
+    fs:with-temp-file { |temp-path|
+      set actual-path = $temp-path
+    }
+
+    os:is-regular $actual-path |
+      should-be $false
+  }
+}
+
+describe 'Consuming a temp directory path' {
+  it 'should make the temp path available' {
+    fs:with-temp-dir { |temp-path|
+      os:is-dir $temp-path |
+        should-be $true
+    }
+  }
+
+  it 'should delete the temp path in the end' {
+    var actual-path
+
+    fs:with-temp-dir { |temp-path|
+      set actual-path = $temp-path
+    }
+
+    os:is-dir $actual-path |
+      should-be $false
+  }
+}
