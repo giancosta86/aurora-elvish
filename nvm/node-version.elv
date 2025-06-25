@@ -2,6 +2,7 @@ use os
 use path
 use str
 use ../console
+use ../lang
 use ../seq
 use ../string
 
