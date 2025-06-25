@@ -5,8 +5,8 @@ use ../lang
 use ../map
 use ../seq
 
-fn ensure-in-map { |map description factory|
-  var existing-context = (map:get-value $map $description)
+fn ensure-in-map { |map title factory|
+  var existing-context = (map:get-value $map $title)
 
   if $existing-context {
     put [
@@ -14,9 +14,9 @@ fn ensure-in-map { |map description factory|
       &updated-map=$map
     ]
   } else {
-    var new-context = ($factory $description)
+    var new-context = ($factory)
 
-    var updated-map = (assoc $map $description $new-context)
+    var updated-map = (assoc $map $title $new-context)
 
     put [
       &context=$new-context
@@ -27,38 +27,38 @@ fn ensure-in-map { |map description factory|
 
 fn get-outcome-map { |context-map|
   map:entries $context-map |
-    seq:each-spread { |description context|
-      put [$description ($context[get-outcome-map])]
+    seq:each-spread { |describe-title context|
+      put [$describe-title ($context[get-outcome-map])]
     } |
     make-map
 }
 
-fn -create { |path|
-  var description = $path[-1]
+fn -create { |describe-path|
+  var title = $describe-path[-1]
   var outcomes = [&]
   var sub-contexts = [&]
 
-  fn format-path { |description|
-    str:join ' -> ' [$@path $description]
+  fn format-path { |title|
+    str:join ' -> ' [$@describe-path $title]
   }
 
   put [
-    &ensure-sub-context={ |description|
+    &ensure-sub-context={ |describe-title|
       var ensure-result = (
-        ensure-in-map $sub-contexts $description { |description| -create [$@path $description] }
+        ensure-in-map $sub-contexts $describe-title { -create [$@describe-path $describe-title] }
       )
 
       set sub-contexts = $ensure-result[updated-map]
       put $ensure-result[context]
     }
 
-    &run-test={ |description block|
-      if (has-key $outcomes $description) {
-        fail 'Duplicated test: '(format-path $description)
+    &run-test={ |test-title block|
+      if (has-key $outcomes $test-title) {
+        fail 'Duplicated test: '(format-path $test-title)
       }
 
       var outcome = ?(
-        command:silence-until-error &description=(styled (format-path $description) red bold) {
+        command:silence-until-error &description=(styled (format-path $test-title) red bold) {
           try {
             $block
           } catch e {
@@ -68,7 +68,7 @@ fn -create { |path|
         }
       )
 
-      set outcomes = (assoc $outcomes $description $outcome)
+      set outcomes = (assoc $outcomes $test-title $outcome)
 
       put $outcome
     }
@@ -82,6 +82,6 @@ fn -create { |path|
   ]
 }
 
-fn create-root { |description|
-  -create [$description]
+fn create-root { |describe-title|
+  -create [$describe-title]
 }

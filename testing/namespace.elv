@@ -10,13 +10,13 @@ fn create { |&allow-crash=$false|
   var root-describe-contexts = [&]
   var current-describe-context = $nil
 
-  fn describe { |description block|
+  fn describe { |describe-title block|
     var coming-describe-context = (
       if $current-describe-context {
-        $current-describe-context[ensure-sub-context] $description
+        $current-describe-context[ensure-sub-context] $describe-title
       } else {
         var ensure-result = (
-          describe-context:ensure-in-map $root-describe-contexts $description $describe-context:create-root~
+          describe-context:ensure-in-map $root-describe-contexts $describe-title { describe-context:create-root $describe-title }
         )
 
         set root-describe-contexts = $ensure-result[updated-map]
@@ -30,14 +30,14 @@ fn create { |&allow-crash=$false|
     $block
   }
 
-  fn it { |description block|
+  fn it { |test-title block|
     if (not $current-describe-context) {
       fail 'Tests must be declared via "it" blocks within a hierarchy of "declare" blocks!'
     }
 
     set total-tests = (+ $total-tests 1)
 
-    var test-outcome = ($current-describe-context[run-test] $description $block)
+    var test-outcome = ($current-describe-context[run-test] $test-title $block)
 
     if (not $test-outcome) {
       set total-failed = (+ $total-failed 1)
