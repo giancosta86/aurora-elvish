@@ -1,6 +1,6 @@
 use os
 use ./console
-use ./files
+use ./fs
 use ./map
 
 fn exists-in-bash { |command|
@@ -8,7 +8,7 @@ fn exists-in-bash { |command|
 }
 
 fn capture-bytes { |&stream=both block|
-  var log-path = (files:temp-path)
+  var log-path = (fs:temp-file-path)
 
   var filtered-block = { $block | only-bytes }
 
@@ -27,9 +27,7 @@ fn capture-bytes { |&stream=both block|
     &log-path=$log-path
     &get-log={ slurp < $log-path }
     &clean={
-      if (os:is-regular $log-path) {
-        os:remove $log-path
-      }
+      fs:rimraf $log-path
     }
   ]
 }

@@ -1,7 +1,6 @@
-use os
 use str
 use path
-use ./files
+use ./fs
 
 fn -set-path-entry {|current-node-executable-path|
   var current-path = (path:dir $current-node-executable-path)
@@ -16,8 +15,8 @@ fn -set-path-entry {|current-node-executable-path|
 }
 
 fn nvm {|params|
-  var temp-path = (files:temp-path)
-  defer { os:remove $temp-path }
+  var temp-path = (fs:temp-file-path)
+  defer { fs:rimraf $temp-path }
 
   bash -c 'source ~/.nvm/nvm.sh; nvm '(str:join " " [$@params])'; nvm which current > '$temp-path
 

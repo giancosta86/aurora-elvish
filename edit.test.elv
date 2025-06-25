@@ -1,13 +1,12 @@
-use os
 use str
 use ./edit
-use ./files
+use ./fs
 
 describe 'Editing a text file' {
   describe 'when the transformer emits a string' {
     it 'should replace the content' {
-      var temp-path = (files:temp-path)
-      defer { os:remove $temp-path }
+      var temp-path = (fs:temp-file-path)
+      defer { fs:rimraf $temp-path }
 
       print 'Test' > $temp-path
 
@@ -24,8 +23,8 @@ describe 'Editing a text file' {
 
   describe 'when the transformer emits $nil' {
     it 'should leave the content untouched' {
-      var temp-path = (files:temp-path)
-      defer { os:remove $temp-path }
+      var temp-path = (fs:temp-file-path)
+      defer { fs:rimraf $temp-path }
 
       var initial-value = 'Test'
 
@@ -45,7 +44,7 @@ describe 'Editing a text file' {
 
 describe 'Editing a file via jq' {
   it 'should apply the requested transform' {
-    var path = (files:temp-path)
+    var path = (fs:temp-file-path)
 
     echo '{ "alpha": 90, "beta": 92, "gamma": 95 }' > $path
 
