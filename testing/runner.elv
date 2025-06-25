@@ -26,7 +26,11 @@ fn -run-file { |&allow-crash=$false path test-namespace|
   eval &ns=$test-namespace $source-string
 }
 
-fn run { |&file-selector=$-default-file-selector &reporters=[$cli:display~] &allow-crash=$false|
+fn run { |
+  &file-selector=$-default-file-selector
+  &reporters=[$cli:display~]
+  &allow-crash=$false
+|
   var namespace-controller = (namespace:create &allow-crash=$allow-crash)
 
   -get-test-files $file-selector |
@@ -51,7 +55,13 @@ fn run { |&file-selector=$-default-file-selector &reporters=[$cli:display~] &all
   ]
 }
 
-fn test { |&file-selector=$-default-file-selector &reporters=[$cli:display~] &allow-crash=$false &clear=$true &output-failures=$false|
+fn test { |
+  &file-selector=$-default-file-selector
+  &reporters=[$cli:display~]
+  &allow-crash=$false
+  &clear=$true
+  &output-failures=$false
+|
   if $clear {
     clear
   }
