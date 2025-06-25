@@ -61,7 +61,7 @@ fn create { |&allow-crash=$false|
     &expect-log~=$assertions:expect-log~
   ])
 
-  fn get-results {
+  fn get-stats {
     put [
       &is-ok=(== $total-failed 0)
       &total-tests=$total-tests
@@ -76,7 +76,7 @@ fn create { |&allow-crash=$false|
 
   put [
     &namespace=$namespace
-    &get-results=$get-results~
+    &get-stats=$get-stats~
     &get-outcome-map=$get-outcome-map~
   ]
 }

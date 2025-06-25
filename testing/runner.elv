@@ -20,31 +20,21 @@ fn has-tests { |&file-selector=$-default-file-selector|
   not-eq $first-file $nil
 }
 
-fn run-file { |&allow-crash=$false path test-namespace|
+fn -run-file { |&allow-crash=$false path test-namespace|
   var source-string = (slurp < $path)
 
   eval &ns=$test-namespace $source-string
 }
 
-fn run { |&allow-crash=$false &file-selector=$-default-file-selector|
+fn run { |&file-selector=$-default-file-selector &reporters=[$cli:display~] &allow-crash=$false|
   var namespace-controller = (namespace:create &allow-crash=$allow-crash)
-  var test-namespace = $namespace-controller[namespace]
 
   -get-test-files $file-selector |
     each { |test-file-path|
-      run-file &allow-crash=$allow-crash $test-file-path $test-namespace
+      -run-file &allow-crash=$allow-crash $test-file-path $namespace-controller[namespace]
     }
 
-  put $namespace-controller
-}
-
-fn test { |&file-selector=$-default-file-selector &reporters=[$cli:display~] &allow-crash=$false|
-  clear
-
-  var namespace-controller = (run &allow-crash=$allow-crash &file-selector=$file-selector)
-
   if (seq:is-non-empty $reporters) {
-
     var outcome-map = ($namespace-controller[get-outcome-map])
 
     all $reporters | each { |reporter|
@@ -55,13 +45,24 @@ fn test { |&file-selector=$-default-file-selector &reporters=[$cli:display~] &al
 
   console:echo
 
-  var results = ($namespace-controller[get-results])
+  put [
+    &get-stats=$namespace-controller[get-stats]
+    &get-outcome-map=$namespace-controller[get-outcome-map]
+  ]
+}
 
-  if $results[is-ok] {
-    var message = 'All the '$results[total-tests]' tests passed.'
-    console:echo (styled $message green bold)
-  } else {
-    var message = 'Failed tests: '$results[total-failed]' out of '$results[total-tests]'.'
-    console:echo (styled $message red bold)
-  }
+fn test { |&file-selector=$-default-file-selector &reporters=[$cli:display~] &allow-crash=$false|
+  clear
+
+  var run-output = (run &file-selector=$file-selector &reporters=$reporters &allow-crash=$allow-crash)
+
+  # var stats = ($run-output[get-stats])
+
+  # if $stats[is-ok] {
+  #   var message = 'All the '$stats[total-tests]' tests passed.'
+  #   console:echo (styled $message green bold)
+  # } else {
+  #   var message = 'Failed tests: '$stats[total-failed]' out of '$stats[total-tests]'.'
+  #   console:echo (styled $message red bold)
+  # }
 }
