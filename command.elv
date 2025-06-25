@@ -26,7 +26,11 @@ fn capture-bytes { |&stream=both block|
     &outcome=$outcome
     &log-path=$log-path
     &get-log={ slurp < $log-path }
-    &clean={ rm -f $log-path }
+    &clean={
+      if (os:is-regular $log-path) {
+        os:remove $log-path
+      }
+    }
   ]
 }
 

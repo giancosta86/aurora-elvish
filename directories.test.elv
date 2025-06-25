@@ -5,7 +5,7 @@ use ./directories
 describe 'The mkcd command' {
   describe 'when the target directory does not exist' {
     var test-root = (os:temp-dir)
-    defer { rm -rf $test-root }
+    defer { os:remove-all $test-root }
 
     tmp pwd = $test-root
 
@@ -27,7 +27,7 @@ describe 'The mkcd command' {
   describe 'when the target directory already exists' {
     it 'should just move to that directory' {
       var test-root = (os:temp-dir)
-      defer { rm -rf $test-root }
+      defer { os:remove-all $test-root }
 
       tmp pwd = $test-root
 

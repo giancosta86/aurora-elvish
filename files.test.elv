@@ -42,7 +42,7 @@ describe 'Preserving file state' {
       var test-file = LICENSE
 
       files:preserve-state $test-file {
-        rm $test-file
+        os:remove $test-file
       }
 
       os:is-regular $test-file |

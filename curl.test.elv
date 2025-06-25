@@ -7,10 +7,10 @@ describe 'cURL' {
   describe 'when not disabling the progress' {
     it 'should display the progress' {
       files:preserve-state $curl:configuration-path {
-        rm $curl:configuration-path
+        os:remove $curl:configuration-path
 
         curl gianlucacosta.info -o $os:dev-null 2>curl.log
-        defer { rm curl.log }
+        defer { os:remove curl.log }
 
         var log = (slurp < curl.log)
 
@@ -26,7 +26,7 @@ describe 'cURL' {
         curl:disable-non-error-output
 
         curl gianlucacosta.info -o $os:dev-null 2>curl.log
-        defer { rm curl.log }
+        defer { os:remove curl.log }
 
         var log = (slurp < curl.log)
 

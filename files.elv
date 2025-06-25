@@ -25,7 +25,7 @@ fn preserve-state { |&suffix='.orig' path block|
     if $backup-path {
       mv $backup-path $path
     } else {
-      rm $path
+      os:remove $path
     }
   }
 }

@@ -1,3 +1,4 @@
+use os
 use str
 use ./edit
 use ./files
@@ -6,7 +7,7 @@ describe 'Editing a text file' {
   describe 'when the transformer emits a string' {
     it 'should replace the content' {
       var temp-path = (files:temp-path)
-      defer { rm -f $temp-path }
+      defer { os:remove $temp-path }
 
       print 'Test' > $temp-path
 
@@ -24,7 +25,7 @@ describe 'Editing a text file' {
   describe 'when the transformer emits $nil' {
     it 'should leave the content untouched' {
       var temp-path = (files:temp-path)
-      defer { rm -f $temp-path }
+      defer { os:remove $temp-path }
 
       var initial-value = 'Test'
 
