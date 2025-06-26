@@ -1,14 +1,29 @@
+use path
 use ../console
 use ../map
 use ./assertions
 use ./describe-context
 
 fn create { |&allow-crash=$false|
+  var current-source-path
+
   var total-tests = 0
   var total-failed = 0
 
   var root-describe-contexts = [&]
   var current-describe-context = $nil
+
+  fn set-current-source-path { |path|
+    set current-source-path = (path:abs $path)
+  }
+
+  fn virtual-src {
+    put [
+      &code="src\n"
+      &is-file=$true
+      &name=$current-source-path
+    ]
+  }
 
   fn describe { |describe-title block|
     var coming-describe-context = (
@@ -53,6 +68,7 @@ fn create { |&allow-crash=$false|
   }
 
   var namespace = (ns [
+    &src~=$virtual-src~
     &describe~=$describe~
     &it~=$it~
     &fail-test~=$fail-test~
@@ -78,5 +94,6 @@ fn create { |&allow-crash=$false|
     &namespace=$namespace
     &get-stats=$get-stats~
     &get-outcome-map=$get-outcome-map~
+    &set-current-source-path=$set-current-source-path~
   ]
 }

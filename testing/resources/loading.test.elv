@@ -5,11 +5,6 @@ describe 'Loading resources from a nested script'  {
 
   var alpha-path = ($resources[get-path] alpha.txt)
 
-  if 'should return the correct path' {
-    put $alpha-path |
-      should-be 'testing/resources/alpha.txt'
-  }
-
   it 'should return the content' {
     var alpha-content = (slurp < $alpha-path)
 

@@ -35,6 +35,7 @@ fn run { |
 
   -get-test-files $file-selector |
     each { |test-file-path|
+      $namespace-controller[set-current-source-path] $test-file-path
       -run-file &allow-crash=$allow-crash $test-file-path $namespace-controller[namespace]
     }
 
