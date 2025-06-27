@@ -4,10 +4,14 @@ use ./fs
 
 var -nvm-boot-script = '~/.nvm/nvm.sh'
 
+fn -is-nvm-related-path { |path|
+  str:has-prefix $path (path:join ~ .nvm)$path:separator
+}
+
 fn -add-nvm-node-to-paths { |current-node-executable|
   var paths-without-nvm = [(
     all $paths | each { |path|
-      if (not (str:has-prefix $path ~/.nvm/)) {
+      if (not (-is-nvm-related-path $path)) {
         put $path
       }
     }
