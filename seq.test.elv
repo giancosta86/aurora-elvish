@@ -177,3 +177,42 @@ describe 'Getting a value at a given index' {
     }
   }
 }
+
+describe 'Getting the shared prefix of two sequences' {
+  describe 'when the sequences are both empty' {
+    it 'should output an empty list' {
+      seq:get-prefix [] [] |
+        should-be []
+    }
+  }
+
+  describe 'when the sequences are equal' {
+    it 'should output such sequence' {
+      seq:get-prefix [A B C] [A B C] |
+        should-be [A B C]
+    }
+  }
+
+  describe 'when one is the prefix of the other' {
+    describe 'when the left operand is shorter' {
+      it 'should output such operand' {
+        seq:get-prefix [A B C] [A B C D E F] |
+          should-be [A B C]
+      }
+    }
+
+    describe 'when the right operand is shorter' {
+      it 'should output such operand' {
+        seq:get-prefix [A B C D E F] [A B C] |
+          should-be [A B C]
+      }
+    }
+  }
+
+  describe 'when the two sequences only partially overlap' {
+    it 'should output the shared prefix' {
+      seq:get-prefix [A B C D M N O S T] [A B C S T] |
+        should-be [A B C]
+    }
+  }
+}

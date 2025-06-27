@@ -37,7 +37,6 @@ fn get-at { |&default=$nil source index|
   }
 }
 
-#TODO! Test this!
 fn get-prefix { |left right|
   var result = []
 

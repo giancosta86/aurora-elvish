@@ -67,7 +67,7 @@ describe 'Parsing a semver' {
         should-be 0
 
       put $semver[patch] |
-        should-be 0XXXXXXX
+        should-be 0
     }
 
     it 'should have pre-release and build set to $nil' {

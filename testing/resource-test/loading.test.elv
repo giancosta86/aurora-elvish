@@ -1,6 +1,3 @@
-echo '☢☢☢ PWD HERE IS: '$pwd >&2
-echo '🤔🤔🤔 SRC HERE IS: '(src)[name] >&2
-
 use ../../resources
 
 describe 'Loading resources from a nested script'  {
