@@ -295,6 +295,13 @@ describe 'Consuming a temp file path' {
     os:is-regular $actual-path |
       should-be $false
   }
+
+  it 'should move the directory containing the temp file' {
+    fs:with-temp-file { |temp-path|
+      put $pwd |
+        should-be (path:dir $temp-path)
+    }
+  }
 }
 
 describe 'Consuming a temp directory path' {
@@ -314,5 +321,12 @@ describe 'Consuming a temp directory path' {
 
     os:is-dir $actual-path |
       should-be $false
+  }
+
+  it 'should move the current directory to the temp directory' {
+    fs:with-temp-dir { |temp-path|
+      put $pwd |
+        should-be $temp-path
+    }
   }
 }

@@ -2,6 +2,7 @@ use file
 use os
 use path
 use str
+use ./lang
 use ./seq
 
 fn touch { |path|
@@ -57,40 +58,24 @@ fn mkcd { |&perm=0o755 @components|
   cd $actual-path
 }
 
-fn -with-temp-object { |temp-path-factory|
-  put { |consumer|
-    var temp-path = ($temp-path-factory)
+fn -with-temp-object { |temp-path consumer|
+  try {
+    {
+      var temp-pwd = (lang:ternary (os:is-dir $temp-path) $temp-path (path:dir $temp-path))
 
-    try {
+      tmp pwd = $temp-pwd
+
       $consumer $temp-path
-    } finally {
-      rimraf $temp-path
     }
+  } finally {
+    rimraf $temp-path
   }
 }
 
-var with-temp-file~ = (-with-temp-object $temp-file-path~)
+fn with-temp-file { |&dir='' consumer|
+  -with-temp-object (temp-file-path &dir=$dir) $consumer
+}
 
-var with-temp-dir~ = (-with-temp-object $os:temp-dir~)
-
-#TODO! Test this
-fn relativize { |reference-path source-path|
-  var reference-components = [(str:split $path:separator $reference-path)]
-
-  var source-components = [(str:split $path:separator $source-path)]
-
-  var prefix = (seq:get-prefix $reference-components $source-components)
-  var prefix-length = (count $prefix)
-
-  var meaningful-reference-components = [(drop $prefix-length $reference-components)]
-  var meaningful-source-components = [(drop $prefix-length $source-components)]
-
-  var leaving-reference-components = [(repeat (count $meaningful-reference-components) ..)]
-
-  var result-components = [
-    $@leaving-reference-components
-    $@meaningful-source-components
-  ]
-
-  path:join $@result-components
+fn with-temp-dir { |&dir='' consumer|
+  -with-temp-object (os:temp-dir &dir=$dir) $consumer
 }
