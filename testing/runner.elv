@@ -36,7 +36,7 @@ fn -get-use-directive { |module alias|
 fn -redirect-uses { |source-path|
   var text-content = (all)
 
-  var use-regex = '(?m)^use\s+(\S+)(?:\s+as(\s+)\S+)?\s*(?:#.*)?$'
+  var use-regex = '(?m)^\s*use\s+(\S+)(?:\s+as(\s+)\S+)?\s*(?:#.*)?$'
 
   re:replace $use-regex { |matching-line|
     var match = (re:find $use-regex $matching-line)
@@ -120,7 +120,7 @@ fn test { |
     clear
   }
 
-  var run-output = (run &file-selector=$file-selector &reporters=$reporters &allow-crash=$allow-crash)
+  var run-output = (run &file-selector=$file-selector &reporters=$reporters &allow-crash=$allow-crash | only-values)
 
   var stats = ($run-output[get-stats])
 
