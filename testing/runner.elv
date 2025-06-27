@@ -24,49 +24,6 @@ fn has-tests { |&file-selector=$-default-file-selector|
   not-eq $first-file $nil
 }
 
-fn -get-use-directive { |module alias|
-  if (seq:is-empty $alias) {
-    put 'use '$module
-  } else {
-    put 'use '$module' as '$alias
-  }
-}
-
-
-fn -redirect-uses { |source-path|
-  var text-content = (all)
-
-  var use-regex = '(?m)^\s*use\s+(\S+)(?:\s+as(\s+)\S+)?\s*(?:#.*)?$'
-
-  re:replace $use-regex { |matching-line|
-    var match = (re:find $use-regex $matching-line)
-    var groups = $match[groups]
-
-    var requested-module = $groups[1][text]
-    var alias = $groups[2][text]
-
-    var is-relative = (str:has-prefix $requested-module '.')
-
-    if $is-relative {
-      var runner-directory = $pwd
-
-      var source-directory = (path:dir $source-path)
-      var requested-path = (path:join $source-directory $requested-module)
-
-      console:inspect &emoji=📄 'SOURCE PATH' $source-path
-      console:inspect &emoji=📁 'SOURCE DIRECTORY' $source-directory
-
-      console:inspect &emoji=💬 'REQUESTED PATH' $requested-path
-
-      var updated-module = './'(fs:relativize $runner-directory $requested-path)
-
-      -get-use-directive $updated-module $alias
-    } else {
-      -get-use-directive $requested-module $alias
-    }
-  } $text-content
-}
-
 fn -run-file { |&allow-crash=$false source-path test-namespace|
   var source-string = (slurp < $source-path)
 
