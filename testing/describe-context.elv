@@ -1,6 +1,7 @@
 use str
 use ../command
 use ../console
+use ../exception
 use ../lang
 use ../map
 use ../seq
@@ -62,8 +63,10 @@ fn -create { |describe-path|
           try {
             $block
           } catch e {
-            console:pprint $e
-            fail $e
+            if (not (exception:is-return $e)) {
+              console:pprint $e
+              fail $e
+            }
           }
         }
       )
