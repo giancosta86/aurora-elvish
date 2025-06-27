@@ -68,6 +68,7 @@ fn create { |&allow-crash=$false|
   }
 
   var namespace = (ns [
+    &pwd=$pwd
     &src~=$virtual-src~
     &describe~=$describe~
     &it~=$it~
