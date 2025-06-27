@@ -1,4 +1,5 @@
 echo '☢☢☢ PWD HERE IS: '$pwd >&2
+echo '🤔🤔🤔 SRC HERE IS: '(src)[name] >&2
 
 describe 'Loading resources from a nested script'  {
   it 'should return the content' {
