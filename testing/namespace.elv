@@ -69,7 +69,6 @@ fn create { |&allow-crash=$false|
 
   var namespace = (ns [
     &src~=$virtual-src~
-    &magic-src~=$virtual-src~
     &describe~=$describe~
     &it~=$it~
     &fail-test~=$fail-test~
