@@ -1,5 +1,6 @@
 use os
 use path
+use re
 use str
 use ../console
 use ../lang
@@ -7,18 +8,25 @@ use ../seq
 use ../string
 
 fn -detect-from-package-json {
-  var version = (
+  if (not (os:is-regular package.json)) {
+    put $nil
+    return
+  }
+
+  var version-field = (
     jq -r '.engines.node // ""' package.json |
       string:empty-to-default (all)
   )
 
   if $version {
-    console:inspect 'NodeJS version requested in package.json' $version
+    console:inspect 'NodeJS version requested in package.json field' $version-field
   } else {
     console:echo 💭 No 'engines/node' field in package.json...
   }
 
-  put $version
+  re:find '.*?(\d+(?:\.\d+)*).*' $version-field | each { |match|
+    put 'v'$match[groups][1][text]
+  }
 }
 
 fn -detect-from-nvmrc {
