@@ -65,20 +65,42 @@ describe 'Retrieving the requested NodeJS version' {
           node-version:detect-in-pwd |
             should-be $nil
 
-          fail-test
+          node-version:detect-recursively |
+            should-be $nvmrc-version
         }
       }
     }
 
     describe 'when an ancestor directory contains only package.json field' {
       it 'should emit such version' {
-        fail-test
+        fs:with-temp-dir { |_|
+          -write-package-json-file
+
+          fs:mkcd (path:join A B C D)
+
+          node-version:detect-in-pwd |
+            should-be $nil
+
+          node-version:detect-recursively |
+            should-be $package-json-version
+        }
       }
     }
 
     describe 'when an ancestor directory contains both .nvmrc and package.json field' {
       it 'should emit the version in .nvmrc' {
-        fail-test
+        fs:with-temp-dir { |_|
+          -write-nvmrc-file
+          -write-package-json-file
+
+          fs:mkcd (path:join A B C D)
+
+          node-version:detect-in-pwd |
+            should-be $nil
+
+          node-version:detect-recursively |
+            should-be $nvmrc-version
+        }
       }
     }
   }

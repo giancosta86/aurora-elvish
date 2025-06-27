@@ -54,20 +54,26 @@ fn detect-in-pwd {
 }
 
 fn detect-recursively {
-  while $true {
-    var version = (detect-in-pwd)
+  var original-pwd = $pwd
 
-    if $version {
-      put $version
-      return
+  try {
+    while $true {
+      var version = (detect-in-pwd)
+
+      if $version {
+        put $version
+        return
+      }
+
+      var parent-dir = (path:dir $pwd)
+      if (==s $parent-dir $pwd) {
+        put $nil
+        return
+      }
+
+      set pwd = $parent-dir
     }
-
-    var parent-dir = (path:dir $pwd)
-    if (==s $parent-dir $pwd) {
-      put $nil
-      return
-    }
-
-    tmp pwd = $parent-dir
+  } finally {
+    set pwd = $original-pwd
   }
 }
