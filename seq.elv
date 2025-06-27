@@ -1,3 +1,5 @@
+use math
+
 fn is-empty { |container| == (count $container) 0 }
 
 fn is-non-empty { |container| != (count $container) 0 }
@@ -23,6 +25,31 @@ fn reduce { |initial-value operator|
   each { |item|
     set result = ($operator $result $item)
   }
+
+  put $result
+}
+
+#TODO! Test this!
+fn get-at { |&default=$nil source index|
+  if (> (count $source) $index) {
+    put $source[$index]
+  } else {
+    put $default
+  }
+}
+
+#TODO! Test this!
+fn get-prefix { |left right|
+  var result = []
+
+  range 0 (math:min (count $left) (count $right)) |
+    each { |index|
+      if (eq $left[$index] $right[$index]) {
+        set result = [$@result $left[$index]]
+      } else {
+        break
+      }
+    }
 
   put $result
 }

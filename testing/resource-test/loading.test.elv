@@ -1,4 +1,4 @@
-use ./resources #TODO! change this!
+use ../../resources
 
 describe 'Loading resources from a nested script'  {
   var resources = (resources:for-script (src))

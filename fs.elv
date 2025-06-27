@@ -1,6 +1,8 @@
 use file
 use os
 use path
+use str
+use ./seq
 
 fn touch { |path|
   print > $path
@@ -70,3 +72,25 @@ fn -with-temp-object { |temp-path-factory|
 var with-temp-file~ = (-with-temp-object $temp-file-path~)
 
 var with-temp-dir~ = (-with-temp-object $os:temp-dir~)
+
+#TODO! Test this
+fn relativize { |reference-path source-path|
+  var reference-components = [(str:split $path:separator $reference-path)]
+
+  var source-components = [(str:split $path:separator $source-path)]
+
+  var prefix = (seq:get-prefix $reference-components $source-components)
+  var prefix-length = (count $prefix)
+
+  var meaningful-reference-components = [(drop $prefix-length $reference-components)]
+  var meaningful-source-components = [(drop $prefix-length $source-components)]
+
+  var leaving-reference-components = [(repeat (count $meaningful-reference-components) ..)]
+
+  var result-components = [
+    $@leaving-reference-components
+    $@meaningful-source-components
+  ]
+
+  path:join $@result-components
+}
