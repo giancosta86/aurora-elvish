@@ -4,14 +4,14 @@ use ./command
 
 describe 'Testing whether a command exists in Bash' {
   describe 'if the command is a program in the path' {
-    it 'should put $true' {
+    it 'should output $true' {
       command:exists-in-bash cat |
         should-be $true
     }
   }
 
   describe 'if the command is an alias' {
-    it 'should put $true' {
+    it 'should output $true' {
       var test-alias = myTestAlias
 
       echo 'alias '$test-alias'=''ls -l''' >> ~/.bashrc
@@ -22,7 +22,7 @@ describe 'Testing whether a command exists in Bash' {
   }
 
   describe 'if the command does not exist' {
-    it 'should put $false' {
+    it 'should output $false' {
       command:exists-in-bash INEXISTENT |
         should-be $false
     }

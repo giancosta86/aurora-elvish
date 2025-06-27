@@ -3,14 +3,14 @@ use ./seq
 describe 'Is-empty test' {
   describe 'when the source is a list' {
     describe 'when the list is empty' {
-      it 'should put $true' {
+      it 'should output $true' {
         seq:is-empty [] |
           should-be $true
       }
     }
 
     describe 'when the list is not empty' {
-      it 'should put $false' {
+      it 'should output $false' {
         seq:is-empty [A B C] |
           should-be $false
       }
@@ -19,14 +19,14 @@ describe 'Is-empty test' {
 
   describe 'when the source is a string' {
     describe 'when the string is empty' {
-      it 'should put $true' {
+      it 'should output $true' {
         seq:is-empty '' |
           should-be $true
       }
     }
 
     describe 'when the string is not empty' {
-      it 'should put $false' {
+      it 'should output $false' {
         seq:is-empty 'Hello' |
           should-be $false
       }
@@ -37,14 +37,14 @@ describe 'Is-empty test' {
 describe 'Is-non-empty test' {
   describe 'when the source is a list' {
     describe 'when the list is empty' {
-      it 'should put $false' {
+      it 'should output $false' {
         seq:is-non-empty [] |
           should-be $false
       }
     }
 
     describe 'when the list is not empty' {
-      it 'should put $true' {
+      it 'should output $true' {
         seq:is-non-empty [A B C] |
           should-be $true
       }
@@ -53,14 +53,14 @@ describe 'Is-non-empty test' {
 
   describe 'when the source is a string' {
     describe 'when the string is empty' {
-      it 'should put $false' {
+      it 'should output $false' {
         seq:is-non-empty '' |
           should-be $false
       }
     }
 
     describe 'when the string is not empty' {
-      it 'should put $true' {
+      it 'should output $true' {
         seq:is-non-empty 'World' |
           should-be $true
       }

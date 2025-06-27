@@ -29,14 +29,14 @@ describe 'Getting a value from a map' {
 
 describe 'Getting the entries of a map' {
   describe 'when the map is empty' {
-    it 'should put nothing' {
+    it 'should output nothing' {
       put [(map:entries [&])] |
         should-be []
     }
   }
 
   describe 'when the map has entries' {
-    it 'should put each of them' {
+    it 'should output each of them' {
       put [(map:entries [&a=90 &b=92 &c=95])] |
         should-be [[a 90] [b 92] [c 95]]
     }

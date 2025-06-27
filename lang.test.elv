@@ -2,14 +2,14 @@ use ./lang
 
 describe 'Function detector' {
   describe 'when passing a non-function value' {
-    it 'should put $false' {
+    it 'should output $false' {
       lang:is-function 98 |
         should-be $false
     }
   }
 
   describe 'when passing a function' {
-    it 'should put $true' {
+    it 'should output $true' {
       fn my-function { echo 'Hello' }
 
       lang:is-function $my-function~ |
@@ -18,7 +18,7 @@ describe 'Function detector' {
   }
 
   describe 'when passing a code block' {
-    it 'should put $true' {
+    it 'should output $true' {
       var code = { echo 'Hello' }
 
       lang:is-function $code |
@@ -61,7 +61,7 @@ describe 'Ensuring that a put is performed' {
   }
 
   describe 'when no put is performed by the block' {
-    it 'should put the default value' {
+    it 'should output the default value' {
       { } | lang:ensure-put &default=World |
         should-be World
     }
