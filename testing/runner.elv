@@ -68,10 +68,9 @@ fn -redirect-uses { |source-path|
 }
 
 fn -run-file { |&allow-crash=$false source-path test-namespace|
-  var source-string = (
-    slurp < $source-path |
-      -redirect-uses $source-path
-  )
+  var source-string = (slurp < $source-path)
+
+  tmp pwd = (path:dir $source-path)
 
   eval &ns=$test-namespace $source-string
 }
