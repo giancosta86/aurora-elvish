@@ -1,3 +1,5 @@
+echo '☢☢☢ PWD HERE IS: '$pwd
+
 use ../../resources
 
 describe 'Loading resources from a nested script'  {
