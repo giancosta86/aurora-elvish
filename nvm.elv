@@ -4,21 +4,21 @@ use ./fs
 
 var -nvm-boot-script = '~/.nvm/nvm.sh'
 
-fn -is-nvm-related-path { |path|
-  str:has-prefix $path (path:join ~ .nvm)$path:separator
+fn -is-nvm-subpath { |path|
+  str:has-prefix $path (path:join ~ .nvm versions)$path:separator
 }
 
-fn -add-nvm-node-to-paths { |current-node-executable|
+fn -ensure-nvm-node-executable-in-paths { |node-executable|
   var paths-without-nvm = [(
     all $paths | each { |path|
-      if (not (-is-nvm-related-path $path)) {
+      if (not (-is-nvm-subpath $path)) {
         put $path
       }
     }
   )]
 
   set paths = [
-    (path:dir $current-node-executable)
+    (path:dir $node-executable)
 
     $@paths-without-nvm
   ]
@@ -28,12 +28,12 @@ fn nvm { |params|
   fs:with-temp-file { |output-path|
     bash -c 'source '$-nvm-boot-script'; nvm '(str:join " " [$@params])'; nvm which current > '$output-path
 
-    var nvm-path-entry = (slurp < $output-path)
+    var current-node-executable = (slurp < $output-path)
 
-    -add-nvm-node-to-paths $nvm-path-entry
+    -ensure-nvm-node-executable-in-paths $current-node-executable
   }
 }
 
 fn ensure-path-entry {
-  -add-nvm-node-to-paths (bash -c 'source '$-nvm-boot-script'; nvm which current')
+  -ensure-nvm-node-executable-in-paths (bash -c 'source '$-nvm-boot-script'; nvm which current')
 }
