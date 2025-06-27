@@ -73,8 +73,6 @@ fn -run-file { |&allow-crash=$false source-path test-namespace|
       -redirect-uses $source-path
   )
 
-  console:section &emoji=📄 'UPDATED SOURCE FILE' $source-string
-
   eval &ns=$test-namespace $source-string
 }
 

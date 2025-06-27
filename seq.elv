@@ -29,7 +29,6 @@ fn reduce { |initial-value operator|
   put $result
 }
 
-#TODO! Test this!
 fn get-at { |&default=$nil source index|
   if (> (count $source) $index) {
     put $source[$index]

@@ -152,3 +152,28 @@ describe 'Reduction' {
       should-be 90
   }
 }
+
+describe 'Getting a value at a given index' {
+  describe 'when the index exists' {
+    it 'should output the related value' {
+      seq:get-at [A B C] 2 |
+        should-be C
+    }
+  }
+
+  describe 'when the index does not exist' {
+    describe 'when a default value is passed' {
+      it 'should output such default value' {
+        seq:get-at &default=Dodo [A B C] 90 |
+          should-be Dodo
+      }
+    }
+
+    describe 'when no default value is passed' {
+      it 'should output $nil' {
+        seq:get-at [A B C] 90 |
+          should-be $nil
+      }
+    }
+  }
+}
