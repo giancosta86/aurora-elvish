@@ -27,7 +27,6 @@ describe 'Ensuring the current nvm NodeJS executable is in PATH' {
   }
 }
 
-
 describe 'Retrieving the current NodeJS executable via nvm' {
   it 'should return an existing file' {
     nvm:nvm which current |

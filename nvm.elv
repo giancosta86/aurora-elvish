@@ -24,7 +24,7 @@ fn -ensure-nvm-node-executable-in-paths { |node-executable|
   ]
 }
 
-fn nvm { |params|
+fn nvm { |@params|
   fs:with-temp-file { |output-path|
     bash -c 'source '$-nvm-boot-script'; nvm '(str:join " " [$@params])'; nvm which current > '$output-path
 
