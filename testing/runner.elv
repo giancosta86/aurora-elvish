@@ -29,6 +29,8 @@ fn -run-file { |&allow-crash=$false source-path test-namespace|
 
   tmp pwd = (path:dir $source-path)
 
+  fail 'The call to magic-src before eval returns: '($test-namespace[magic-src~])[name]
+
   eval &ns=$test-namespace $source-string
 }
 
