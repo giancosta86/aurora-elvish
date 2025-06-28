@@ -27,11 +27,11 @@ describe 'In nvm' {
         }
       )]
 
+      set paths = $paths-without-nvm
+
       console:inspect &emoji=◀️ 'PATH before ensuring nvm' $paths
 
       console:inspect &emoji=📦 'NodeJS executable' (nvm:nvm which current)
-
-      set paths = $paths-without-nvm
 
       console:inspect &emoji=▶️ 'PATH after ensuring nvm' $paths
 
