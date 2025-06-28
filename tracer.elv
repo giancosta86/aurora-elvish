@@ -1,5 +1,4 @@
 use ./console
-use ./map
 
 fn create { |is-enabled-retriever|
   put [
@@ -45,30 +44,4 @@ fn create { |is-enabled-retriever|
       }
     }
   ]
-}
-
-fn based-on-env-var { |env-var-name|
-  create {
-    if (has-env $env-var-name) {
-      ==s (get-env $env-var-name) true
-    } else {
-      put $false
-    }
-  }
-}
-
-fn controllable {
-  var enabled = $false
-
-  var tracer = (create { put $enabled })
-
-  var controls = [
-    &set-enabled={ |value| set enabled = $value }
-
-    &enable={ set enabled = $true }
-
-    &disable={ set enabled = $false }
-  ]
-
-  map:merge $tracer $controls
 }
