@@ -208,34 +208,6 @@ describe 'Requesting a temp file path' {
   }
 }
 
-describe 'Preserving file state' {
-  describe 'if the file existed' {
-    it 'should restore the original file in the end' {
-      var test-file = LICENSE
-
-      fs:preserve-file-state $test-file {
-        fs:rimraf $test-file
-      }
-
-      os:is-regular $test-file |
-        should-be $true
-    }
-  }
-
-  describe 'if the file did not exist' {
-    it 'should remove the file in the end' {
-      var test-file = SOME_INEXISTING_FILE
-
-      fs:preserve-file-state $test-file {
-        echo Some text > $test-file
-      }
-
-      os:is-regular $test-file |
-        should-be $false
-    }
-  }
-}
-
 describe 'The mkcd command' {
   describe 'when the target directory does not exist' {
     var test-root = (os:temp-dir)
@@ -273,6 +245,103 @@ describe 'The mkcd command' {
 
       path:base $pwd |
         should-be $components[-1]
+    }
+  }
+}
+
+describe 'Opening a file sandbox' {
+  describe 'in the end' {
+    describe 'if the path existed' {
+      it 'should restore the original file' {
+        var test-file = LICENSE
+
+        fs:with-file-sandbox $test-file {
+          fs:rimraf $test-file
+        }
+
+        os:is-regular $test-file |
+          should-be $true
+      }
+    }
+
+    describe 'if the path did not exist' {
+      it 'should remove the file' {
+        var test-file = SOME_INEXISTING_FILE
+
+        fs:with-file-sandbox $test-file {
+          echo Some text > $test-file
+        }
+
+        os:is-regular $test-file |
+          should-be $false
+      }
+    }
+  }
+}
+
+describe 'Opening a directory sandbox' {
+  describe 'in the end' {
+    describe 'if the path existed' {
+      it 'should restore the tree as it was' {
+        fs:with-temp-dir { |_|
+          var sigma = sigma.txt
+          print Sigma > $sigma
+
+          slurp < $sigma |
+            should-be Sigma
+
+          var a = A
+
+          var b = (path:join $a B)
+
+          fs:with-dir-sandbox . {
+            print LOL > $sigma
+
+            os:mkdir-all $b
+
+            var c = (path:join $b C.txt)
+            touch $c
+
+            slurp < $sigma |
+              should-be LOL
+
+            os:is-regular $c |
+              should-be $true
+          }
+
+          slurp < $sigma |
+            should-be Sigma
+
+          os:is-dir $a |
+            should-be $false
+        }
+      }
+    }
+
+    describe 'if the path did not exist' {
+      it 'should remove the entire tree' {
+        fs:with-temp-dir { |_|
+          var a = A
+
+          var b = (path:join $a B)
+
+          os:is-dir $a |
+            should-be $false
+
+          fs:with-dir-sandbox $a {
+            os:mkdir-all $b
+
+            os:is-dir $a |
+              should-be $true
+
+            os:is-dir $b |
+              should-be $true
+          }
+
+          os:is-dir $a |
+            should-be $false
+        }
+      }
     }
   }
 }

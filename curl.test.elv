@@ -6,7 +6,7 @@ use ./fs
 describe 'cURL' {
   describe 'when not disabling the progress' {
     it 'should display the progress' {
-      fs:preserve-file-state $curl:configuration-path {
+      fs:with-file-sandbox $curl:configuration-path {
         fs:rimraf $curl:configuration-path
 
         curl gianlucacosta.info -o $os:dev-null 2>curl.log
@@ -22,7 +22,7 @@ describe 'cURL' {
 
   describe 'when disabling the progress' {
     it 'should hide the progress' {
-      fs:preserve-file-state $curl:configuration-path {
+      fs:with-file-sandbox $curl:configuration-path {
         curl:disable-non-error-output
 
         curl gianlucacosta.info -o $os:dev-null 2>curl.log

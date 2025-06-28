@@ -28,13 +28,30 @@ fn temp-file-path { |&dir='' @pattern|
   put $temp-file[name]
 }
 
-fn preserve-file-state { |&suffix='.orig' path block|
+fn mkcd { |&perm=0o755 @components|
+  var actual-path = (path:join $@components)
+
+  os:mkdir-all &perm=$perm $actual-path
+
+  cd $actual-path
+}
+
+fn -with-path-sandbox { |inputs|
+  var path = (path:abs $inputs[path])
+  var backup-suffix = $inputs[backup-suffix]
+  var test-path-is-ok = $inputs[test-path-is-ok]
+  var test-path-is-wrong = $inputs[test-path-is-wrong]
+  var error-message = $inputs[error-message]
+  var block = $inputs[block]
+
   var backup-path
 
-  if (os:is-regular $path) {
-    set backup-path = $path$suffix
+  if ($test-path-is-ok $path) {
+    set backup-path = $path''$backup-suffix
 
     copy $path $backup-path
+  } elif ($test-path-is-wrong $path) {
+    fail $error-message
   } else {
     set backup-path = $nil
   }
@@ -42,20 +59,35 @@ fn preserve-file-state { |&suffix='.orig' path block|
   try {
     $block
   } finally {
+    tmp pwd = (path:dir $path)
+    rimraf $path
+
     if $backup-path {
       move $backup-path $path
-    } else {
-      rimraf $path
     }
   }
 }
 
-fn mkcd { |&perm=0o755 @components|
-  var actual-path = (path:join $@components)
+fn with-file-sandbox { |&backup-suffix='.orig' path block|
+  -with-path-sandbox [
+    &path=$path
+    &backup-suffix=$backup-suffix
+    &test-path-is-ok=$os:is-regular~
+    &test-path-is-wrong=$os:is-dir~
+    &error-message='The path must be a regular file!'
+    &block=$block
+  ]
+}
 
-  os:mkdir-all &perm=$perm $actual-path
-
-  cd $actual-path
+fn with-dir-sandbox { |&backup-suffix='.orig' path block|
+  -with-path-sandbox [
+    &path=$path
+    &backup-suffix=$backup-suffix
+    &test-path-is-ok=$os:is-dir~
+    &test-path-is-wrong=$os:is-regular~
+    &error-message='The path must be a directory!'
+    &block=$block
+  ]
 }
 
 fn -with-temp-object { |temp-path consumer|
