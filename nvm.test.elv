@@ -4,40 +4,46 @@ use str
 use ./console
 use ./nvm
 
-describe 'Ensuring the current nvm NodeJS executable is in PATH' {
-  it 'should work' {
-    var paths-without-nvm = [(
+describe 'In nvm' {
+  describe 'retrieving the current NodeJS executable' {
+    it 'should output an existing file' {
+      nvm:nvm which current |
+        os:is-regular (all) |
+        should-be $true
+    }
+  }
+
+  describe 'ensuring the current NodeJS executable is in PATH' {
+    it 'should work' {
+      var current-node-executable = (nvm:nvm which current)
+
+      var current-node-directory = (path:dir $current-node-executable)
+
+      var paths-without-nvm = [(
+        all $paths | each { |path|
+          if (!=s $path $current-node-directory) {
+            put $path
+          }
+        }
+      )]
+
+      console:inspect &emoji=◀️ 'PATH before ensuring nvm' $paths
+
+      console:inspect &emoji=📦 'NodeJS executable' (nvm:nvm which current)
+
+      set paths = $paths-without-nvm
+
+      console:inspect &emoji=▶️ 'PATH after ensuring nvm' $paths
+
+      nvm:ensure-path-entry
+
       all $paths | each { |path|
-        if (not (nvm:-is-nvm-subpath $path)) {
-          put $path
+        if (==s $path $current-node-directory) {
+          return
         }
       }
-    )]
 
-    console:inspect &emoji=◀️ 'PATH before ensuring nvm' $paths
-
-    console:inspect &emoji=📦 'NodeJS executable' (nvm:nvm which current)
-
-    set paths = $paths-without-nvm
-
-    console:inspect &emoji=▶️ 'PATH after ensuring nvm' $paths
-
-    nvm:ensure-path-entry
-
-    all $paths | each { |path|
-      if (nvm:-is-nvm-subpath $path) {
-        return
-      }
+      fail 'No NodeJS executable from nvm was added to PATH!'
     }
-
-    fail 'No NodeJS executable from nvm was added to PATH!'
-  }
-}
-
-describe 'Retrieving the current NodeJS executable via nvm' {
-  it 'should return an existing file' {
-    nvm:nvm which current |
-      os:is-regular (all) |
-      should-be $true
   }
 }
