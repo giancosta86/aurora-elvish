@@ -14,11 +14,11 @@ describe 'Ensuring the current nvm NodeJS executable is in PATH' {
       }
     )]
 
-    console:inspect 'PATH before ensuring nvm' $paths
+    console:inspect &emoji=◀️ 'PATH before ensuring nvm' $paths
 
     set paths = $paths-without-nvm
 
-    console:inspect 'PATH after ensuring nvm' $paths
+    console:inspect &emoji=▶️ 'PATH after ensuring nvm' $paths
 
     nvm:ensure-path-entry
 
