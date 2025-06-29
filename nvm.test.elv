@@ -2,6 +2,7 @@ use os
 use path
 use str
 use ./console
+use ./fs
 use ./nvm
 
 describe 'In nvm' {
@@ -15,35 +16,43 @@ describe 'In nvm' {
 
   describe 'ensuring the current NodeJS executable is in PATH' {
     it 'should work' {
-      var current-node-executable = (nvm:nvm which current)
+      fs:with-file-sandbox $nvm:-boot-script {
+        echo '
+        nvm() {
+          echo ~/.nvm/versions/node/v20.15.1/bin/node
+        }
+        ' > $nvm:-boot-script
 
-      var current-node-directory = (path:dir $current-node-executable)
+        var current-node-executable = (nvm:nvm which current)
 
-      var paths-without-nvm = [(
+        var current-node-directory = (path:dir $current-node-executable)
+
+        var paths-without-nvm = [(
+          all $paths | each { |path|
+            if (!=s $path $current-node-directory) {
+              put $path
+            }
+          }
+        )]
+
+        set paths = $paths-without-nvm
+
+        console:inspect &emoji=◀️ 'PATH before ensuring nvm' $paths
+
+        console:inspect &emoji=📦 'NodeJS executable' (nvm:nvm which current)
+
+        console:inspect &emoji=▶️ 'PATH after ensuring nvm' $paths
+
+        nvm:ensure-path-entry
+
         all $paths | each { |path|
-          if (!=s $path $current-node-directory) {
-            put $path
+          if (==s $path $current-node-directory) {
+            return
           }
         }
-      )]
 
-      set paths = $paths-without-nvm
-
-      console:inspect &emoji=◀️ 'PATH before ensuring nvm' $paths
-
-      console:inspect &emoji=📦 'NodeJS executable' (nvm:nvm which current)
-
-      console:inspect &emoji=▶️ 'PATH after ensuring nvm' $paths
-
-      nvm:ensure-path-entry
-
-      all $paths | each { |path|
-        if (==s $path $current-node-directory) {
-          return
-        }
+        fail 'No NodeJS executable from nvm was added to PATH!'
       }
-
-      fail 'No NodeJS executable from nvm was added to PATH!'
     }
   }
 }

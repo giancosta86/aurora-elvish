@@ -2,7 +2,7 @@ use str
 use path
 use ./fs
 
-var -nvm-boot-script = '~/.nvm/nvm.sh'
+var -boot-script = ~/.nvm/nvm.sh
 
 fn -is-nvm-subpath { |path|
   str:has-prefix $path (path:join ~ .nvm versions)$path:separator
@@ -26,7 +26,7 @@ fn -ensure-nvm-node-executable-in-paths { |node-executable|
 
 fn nvm { |@params|
   fs:with-temp-file { |output-path|
-    bash -c 'source '$-nvm-boot-script'; nvm '(str:join " " [$@params])'; nvm which current > '$output-path
+    bash -c 'source '$-boot-script'; nvm '(str:join " " [$@params])'; nvm which current > '$output-path
 
     var current-node-executable = (slurp < $output-path)
 
@@ -35,5 +35,5 @@ fn nvm { |@params|
 }
 
 fn ensure-path-entry {
-  -ensure-nvm-node-executable-in-paths (bash -c 'source '$-nvm-boot-script'; nvm which current')
+  -ensure-nvm-node-executable-in-paths (bash -c 'source '$-boot-script'; nvm which current')
 }

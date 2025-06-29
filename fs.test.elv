@@ -252,15 +252,36 @@ describe 'The mkcd command' {
 describe 'Opening a file sandbox' {
   describe 'in the end' {
     describe 'if the path existed' {
-      it 'should restore the original file' {
-        var test-file = LICENSE
+      describe 'after modification' {
+        it 'should restore the original file' {
+          fs:with-temp-file { |test-file|
+            var original-content = 'My sample text'
+            print $original-content > $test-file
 
-        fs:with-file-sandbox $test-file {
-          fs:rimraf $test-file
+            fs:with-file-sandbox $test-file {
+              print ASD > $test-file
+
+              slurp < $test-file |
+                should-be ASD
+            }
+
+            slurp < $test-file |
+              should-be $original-content
+          }
         }
+      }
 
-        os:is-regular $test-file |
-          should-be $true
+      describe 'after deletion' {
+        it 'should restore the original file' {
+          fs:with-temp-file { |test-file|
+            fs:with-file-sandbox $test-file {
+              fs:rimraf $test-file
+            }
+
+            os:is-regular $test-file |
+              should-be $true
+          }
+        }
       }
     }
 
@@ -283,7 +304,9 @@ describe 'Opening a directory sandbox' {
   describe 'in the end' {
     describe 'if the path existed' {
       it 'should restore the tree as it was' {
-        fs:with-temp-dir { |_|
+        fs:with-temp-dir { |temp-dir|
+          cd $temp-dir
+
           var sigma = sigma.txt
           print Sigma > $sigma
 
@@ -320,7 +343,9 @@ describe 'Opening a directory sandbox' {
 
     describe 'if the path did not exist' {
       it 'should remove the entire tree' {
-        fs:with-temp-dir { |_|
+        fs:with-temp-dir { |temp-dir|
+          cd $temp-dir
+
           var a = A
 
           var b = (path:join $a B)
@@ -364,19 +389,12 @@ describe 'Consuming a temp file path' {
     os:is-regular $actual-path |
       should-be $false
   }
-
-  it 'should move the directory containing the temp file' {
-    fs:with-temp-file { |temp-path|
-      put $pwd |
-        should-be (path:dir $temp-path)
-    }
-  }
 }
 
 describe 'Consuming a temp directory path' {
   it 'should make the temp path available' {
-    fs:with-temp-dir { |temp-path|
-      os:is-dir $temp-path |
+    fs:with-temp-dir { |temp-dir|
+      os:is-dir $temp-dir |
         should-be $true
     }
   }
@@ -384,18 +402,11 @@ describe 'Consuming a temp directory path' {
   it 'should delete the temp path in the end' {
     var actual-path
 
-    fs:with-temp-dir { |temp-path|
-      set actual-path = $temp-path
+    fs:with-temp-dir { |temp-dir|
+      set actual-path = $temp-dir
     }
 
     os:is-dir $actual-path |
       should-be $false
-  }
-
-  it 'should move the current directory to the temp directory' {
-    fs:with-temp-dir { |temp-path|
-      put $pwd |
-        should-be $temp-path
-    }
   }
 }

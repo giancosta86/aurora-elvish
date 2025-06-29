@@ -59,7 +59,9 @@ fn -with-path-sandbox { |inputs|
   try {
     $block
   } finally {
-    tmp pwd = (path:dir $path)
+    var parent-dir = (path:dir $path)
+    tmp pwd = (lang:ternary (os:is-dir $parent-dir) $parent-dir $pwd)
+
     rimraf $path
 
     if $backup-path {
@@ -92,13 +94,7 @@ fn with-dir-sandbox { |&backup-suffix='.orig' path block|
 
 fn -with-temp-object { |temp-path consumer|
   try {
-    {
-      var temp-pwd = (lang:ternary (os:is-dir $temp-path) $temp-path (path:dir $temp-path))
-
-      tmp pwd = $temp-pwd
-
-      $consumer $temp-path
-    }
+    $consumer $temp-path
   } finally {
     rimraf $temp-path
   }
