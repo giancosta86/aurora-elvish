@@ -65,7 +65,7 @@ describe 'Parsing the use declarations in Elvish code' {
 
     it 'should have the given reference' {
       put $parsed-use[reference] |
-        should-be 'github.com/giancosta86/aurora-elvish/console'
+        should-be github.com/giancosta86/aurora-elvish/console
     }
 
     it 'should have no alias' {
@@ -89,7 +89,7 @@ describe 'Parsing the use declarations in Elvish code' {
 
     it 'should have the given reference' {
       put $parsed-use[reference] |
-        should-be 'github.com/giancosta86/aurora-elvish/console'
+        should-be github.com/giancosta86/aurora-elvish/console
     }
 
     it 'should have the declared alias' {
@@ -113,7 +113,7 @@ describe 'Parsing the use declarations in Elvish code' {
 
     it 'should have the given reference' {
       put $parsed-use[reference] |
-        should-be '../../alpha/beta'
+        should-be ../../alpha/beta
     }
 
     it 'should have no alias' {
@@ -137,22 +137,98 @@ describe 'Parsing the use declarations in Elvish code' {
 
     it 'should have the given reference' {
       put $parsed-use[reference] |
-        should-be '../../alpha/beta'
+        should-be ../../alpha/beta
     }
 
     it 'should have the declared alias' {
       put $parsed-use[alias] |
-        should-be 'my-beta'
+        should-be my-beta
     }
 
     it 'should have namespace equal to its alias' {
       put $parsed-use[namespace] |
-        should-be 'my-beta'
+        should-be my-beta
     }
 
     it 'should be of relative kind' {
       put $parsed-use[kind] |
         should-be $uses:relative
+    }
+  }
+
+  describe 'when parsing multiple uses in the same source code' {
+    var parsed-uses = [(uses:parse '
+      use str
+      use str std-str
+      use github.com/giancosta86/aurora-elvish/console
+      use github.com/giancosta86/aurora-elvish/console my-console
+      use ../../alpha/beta
+      use ../../alpha/beta my-beta
+      ')]
+
+    it 'should parse them all' {
+      count $parsed-uses |
+        should-be 6
+    }
+
+    it 'should parse the standard import' {
+      has-value $parsed-uses [
+        &reference=str
+        &alias=$nil
+        &namespace=str
+        &kind=$uses:standard
+      ] |
+        should-be $true
+    }
+
+    it 'should parse the aliased standard import' {
+      has-value $parsed-uses [
+        &reference=str
+        &alias=std-str
+        &namespace=std-str
+        &kind=$uses:standard
+      ] |
+        should-be $true
+    }
+
+    it 'should parse the absolute import' {
+      has-value $parsed-uses [
+        &reference=github.com/giancosta86/aurora-elvish/console
+        &alias=$nil
+        &namespace=console
+        &kind=$uses:absolute
+      ] |
+        should-be $true
+    }
+
+    it 'should parse the aliased absolute import' {
+      has-value $parsed-uses [
+        &reference=github.com/giancosta86/aurora-elvish/console
+        &alias=my-console
+        &namespace=my-console
+        &kind=$uses:absolute
+      ] |
+        should-be $true
+    }
+
+    it 'should parse the relative import' {
+      has-value $parsed-uses [
+        &reference=../../alpha/beta
+        &alias=$nil
+        &namespace=beta
+        &kind=$uses:relative
+      ] |
+        should-be $true
+    }
+
+    it 'should parse the aliased relative import' {
+      has-value $parsed-uses [
+        &reference=../../alpha/beta
+        &alias=my-beta
+        &namespace=my-beta
+        &kind=$uses:relative
+      ] |
+        should-be $true
     }
   }
 }
