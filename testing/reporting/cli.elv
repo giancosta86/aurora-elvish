@@ -41,6 +41,7 @@ fn -display-outcome-map { |outcome-map level|
 }
 
 fn display { |outcome-map|
+  #TODO! Remove the section with emoji?
   console:section &emoji=📋 (styled 'Test outcomes' blue bold) {
     -display-outcome-map $outcome-map 0
   }

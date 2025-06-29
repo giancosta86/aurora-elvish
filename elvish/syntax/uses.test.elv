@@ -1,4 +1,3 @@
-use ../console
 use ./uses
 
 fn -parse-single-use { |code|

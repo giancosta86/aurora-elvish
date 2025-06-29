@@ -2,7 +2,7 @@ use epm #TODO! Detect this!
 use path
 use re
 use str
-use ../string
+use ../../string
 
 var -use-regex = '(?m)^\s*use\s+(\S+)(?:\s+(\S+))?\s*(?:#.*)?$'
 
