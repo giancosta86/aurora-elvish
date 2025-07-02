@@ -6,7 +6,7 @@ fn analyze-tree { |analyzers|
   put **.elv | seq:reduce [&] { |results-by-file path|
     var file-content = (slurp < $path)
 
-    var results-by-analyzer = all $analyzers |
+    var results-by-analyzer = (all $analyzers |
       seq:reduce [&] { |cumulated-by-analyzer analyzer|
         var analyzer-result = ($analyzer $path $file-content)
 
@@ -15,7 +15,7 @@ fn analyze-tree { |analyzers|
         } else {
           put $cumulated-by-analyzer
         }
-    }
+    })
 
     if (seq:is-non-empty $results-by-analyzer) {
       assoc $results-by-file $path $results-by-analyzer
