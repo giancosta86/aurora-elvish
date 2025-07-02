@@ -1,3 +1,5 @@
+use os
+use path
 use ../console
 use ../hash-set
 use ../map
@@ -17,8 +19,21 @@ fn -find-superfluous-uses { |uses use-namespaces accessed-namespaces|
 fn -find-dangling-namespaces { |ns-identifiers use-namespaces accessed-namespaces|
   var dangling-namespaces = (hash-set:difference $accessed-namespaces $use-namespaces)
 
+  console:inspect &emoji=💣 'Dangling namespaces' $dangling-namespaces
+
+  console:inspect &emoji=📃 'NS-IDENTIFIERS' $ns-identifiers
+
+  console:inspect &emoji=🕵 'SET CHECK' [(
+    all $ns-identifiers |
+    each { |ns-identifier|
+      put [$ns-identifier[namespace] (hash-set:contains $dangling-namespaces $ns-identifier[namespace])]
+    }
+  )]
+
   all $ns-identifiers |
-    keep-if { |ns-identifier| hash-set:contains $dangling-namespaces $ns-identifiers[namespace] }
+    keep-if { |ns-identifier|
+      hash-set:contains $dangling-namespaces $ns-identifier[namespace]
+    }
 }
 
 fn -find-inexistent-relative-uses { |path uses|
@@ -50,8 +65,10 @@ fn check-uses { |
             hash-set:from
         )
 
+        set ns-identifiers = [(ns-identifiers:parse $content)]
+
         set accessed-namespaces = (
-          ns-identifiers:parse $content |
+          all $ns-identifiers |
             each { |ns-identifier| put $ns-identifier[namespace] } |
             hash-set:from
         )
@@ -69,10 +86,12 @@ fn check-uses { |
 
       if $dangling-namespaces {
         set file-result = (
-          -find-dangling-namespaces $uses $use-namespaces $accessed-namespaces |
+          -find-dangling-namespaces $ns-identifiers $use-namespaces $accessed-namespaces |
             seq:empty-to-default [(all)] |
             map:assoc-non-nil $file-result dangling-namespaces (all)
         )
+
+        console:inspect &emoji=📁 'FILE RESULT AFTER DANGLING - '$path $file-result
       }
 
       if $inexistent-relative-uses {
