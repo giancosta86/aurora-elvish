@@ -120,7 +120,7 @@ describe 'Drilling down a map' {
   }
 }
 
-describe 'Filter' {
+describe 'Filtering a map' {
   it 'should work' {
     var source = [
       &a=90
@@ -132,5 +132,21 @@ describe 'Filter' {
       put (and (> $value 90) (!=s $key c))
     } |
       should-be [&b=92]
+  }
+}
+
+describe 'Enforcing the association of a non-nil-value' {
+  describe 'when the value is not nil' {
+    it 'should output the map with the new entry' {
+      map:assoc-non-nil [&A=90] B 92 |
+        should-be [&A=90 &B=92]
+    }
+  }
+
+  describe 'when the value is nil' {
+    it 'should return the original map' {
+      map:assoc-non-nil [&A=90] B $nil |
+        should-be [&A=90]
+    }
   }
 }

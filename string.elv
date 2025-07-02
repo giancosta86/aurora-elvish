@@ -1,5 +1,6 @@
 use str
 use ./lang
+use ./seq
 
 fn empty-to-default { |&default=$nil &trim=$true source|
   var actual-source = (
@@ -10,5 +11,5 @@ fn empty-to-default { |&default=$nil &trim=$true source|
     }
   )
 
-  lang:ternary (!=s $actual-source '') $actual-source $default
+  seq:empty-to-default &default=$default $actual-source
 }

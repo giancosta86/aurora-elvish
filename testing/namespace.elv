@@ -4,7 +4,7 @@ use ../map
 use ./assertions
 use ./describe-context
 
-fn create { |&allow-crash=$false|
+fn create { |&fail-fast=$false|
   var current-source-path
 
   var total-tests = 0
@@ -57,7 +57,7 @@ fn create { |&allow-crash=$false|
     if (not $test-outcome) {
       set total-failed = (+ $total-failed 1)
 
-      if $allow-crash {
+      if $fail-fast {
         fail $test-outcome
       }
     }

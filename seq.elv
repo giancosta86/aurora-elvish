@@ -1,4 +1,5 @@
 use math
+use ./lang
 
 fn is-empty { |container| == (count $container) 0 }
 
@@ -50,4 +51,8 @@ fn get-prefix { |left right|
     }
 
   put $result
+}
+
+fn empty-to-default { |&default=$nil source|
+  lang:ternary (> (count $source) 0) $source $default
 }

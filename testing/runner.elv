@@ -24,7 +24,7 @@ fn has-tests { |&file-selector=$-default-file-selector|
   not-eq $first-file $nil
 }
 
-fn -run-file { |&allow-crash=$false source-path test-namespace|
+fn -run-file { |&fail-fast=$false source-path test-namespace|
   var source-string = (slurp < $source-path)
 
   tmp pwd = (path:dir $source-path)
@@ -35,9 +35,9 @@ fn -run-file { |&allow-crash=$false source-path test-namespace|
 fn run { |
   &file-selector=$-default-file-selector
   &reporters=[$cli:display~]
-  &allow-crash=$false
+  &fail-fast=$false
 |
-  var namespace-controller = (namespace:create &allow-crash=$allow-crash)
+  var namespace-controller = (namespace:create &fail-fast=$fail-fast)
 
   -get-test-files $file-selector |
     each { |wildcard-test-file-path|
@@ -45,7 +45,7 @@ fn run { |
 
       $namespace-controller[set-current-source-path] $test-file-path
 
-      -run-file &allow-crash=$allow-crash $test-file-path $namespace-controller[namespace]
+      -run-file &fail-fast=$fail-fast $test-file-path $namespace-controller[namespace]
     }
 
   if (seq:is-non-empty $reporters) {
@@ -68,7 +68,7 @@ fn run { |
 fn test { |
   &file-selector=$-default-file-selector
   &reporters=[$cli:display~]
-  &allow-crash=$false
+  &fail-fast=$false
   &clear=$true
   &output-failures=$false
 |
@@ -76,7 +76,7 @@ fn test { |
     clear
   }
 
-  var run-output = (run &file-selector=$file-selector &reporters=$reporters &allow-crash=$allow-crash | only-values)
+  var run-output = (run &file-selector=$file-selector &reporters=$reporters &fail-fast=$fail-fast | only-values)
 
   var stats = ($run-output[get-stats])
 

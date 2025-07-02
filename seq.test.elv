@@ -216,3 +216,72 @@ describe 'Getting the shared prefix of two sequences' {
     }
   }
 }
+
+describe 'Turning an empty sequence to default' {
+  describe 'when not passing a default value' {
+    describe 'for strings' {
+      describe 'when empty' {
+        it 'should output $nil' {
+          seq:empty-to-default '' |
+            should-be $nil
+        }
+      }
+
+      describe 'when non-empty' {
+        it 'should output the collection itself' {
+          seq:empty-to-default 'Dodo' |
+            should-be 'Dodo'
+        }
+      }
+    }
+
+    describe 'for lists' {
+      describe 'when empty' {
+        it 'should output $nil' {
+          seq:empty-to-default [] |
+            should-be $nil
+        }
+      }
+
+      describe 'when non-empty' {
+        it 'should output the collection itself' {
+          seq:empty-to-default [A B C] |
+            should-be [A B C]
+        }
+      }
+    }
+
+    describe 'for maps' {
+      describe 'when empty' {
+        it 'should output $nil' {
+          seq:empty-to-default [&] |
+            should-be $nil
+        }
+      }
+
+      describe 'when non-empty' {
+        it 'should output the collection itself' {
+          seq:empty-to-default [&A=90 &B=92] |
+            should-be [&A=90 &B=92]
+        }
+      }
+    }
+  }
+
+  describe 'when passing a default value' {
+    describe 'when the source is empty' {
+      it 'should return such value' {
+        var test-default = my-default
+
+        seq:empty-to-default &default=$test-default '' |
+          should-be $test-default
+
+        seq:empty-to-default &default=$test-default [] |
+          should-be $test-default
+
+        seq:empty-to-default &default=$test-default [&] |
+          should-be $test-default
+      }
+    }
+  }
+}

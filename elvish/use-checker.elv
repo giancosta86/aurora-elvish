@@ -1,76 +1,90 @@
+use ../console
 use ../hash-set
+use ../map
+use ../seq
 use ./syntax/analysis
 use ./syntax/ns-identifiers
 use ./syntax/uses
 
-fn -find-unreferenced-uses { |uses use-namespaces accessed-namespaces|
+fn -find-superfluous-uses { |uses use-namespaces accessed-namespaces|
+  var unused-namespaces = (hash-set:difference $use-namespaces $accessed-namespaces)
 
+  all $uses |
+    keep-if { |use-info| hash-set:contains $unused-namespaces $use-info[namespace] } |
+    each { |use-info| put $use-info[reference] }
 }
 
-fn -find-dangling-namespaces { |uses use-namespaces accessed-namespaces|
+fn -find-dangling-namespaces { |ns-identifiers use-namespaces accessed-namespaces|
+  var dangling-namespaces = (hash-set:difference $accessed-namespaces $use-namespaces)
 
+  all $ns-identifiers |
+    keep-if { |ns-identifier| hash-set:contains $dangling-namespaces $ns-identifiers[namespace] }
 }
 
-fn -find-missing-relative-uses { |path uses|
-  put [(
-    all $uses |
-      keep-if { |use-info| ==s $use-info[kind] $uses:relative } |
-      keep-if { |use-info|
-        not (os:is-regular (path:join (path:dir $path) $use-info[reference]))
-      }
-  )]
+fn -find-inexistent-relative-uses { |path uses|
+  all $uses |
+    keep-if { |use-info| ==s $use-info[kind] $uses:relative } |
+    keep-if { |use-info|
+      not (os:is-regular (path:join (path:dir $path) $use-info[reference]'.elv'))
+    }
 }
 
-fn check { |
+fn check-uses { |
   &interactive=$true
-  &unreferenced-uses=$true
+  &superfluous-uses=$true
   &dangling-namespaces=$true
-  &missing-relative-uses=$true
+  &inexistent-relative-uses=$true
 |
   var errors = (
-    analysis:analyze-tree { |path content|
-      var uses = (uses:parse $content)
+    analysis:analyze-tree [{ |path content|
+      var uses = [(uses:parse $content)]
 
       var use-namespaces
+      var ns-identifiers
       var accessed-namespaces
 
-      if (or $unreferenced-uses $dangling-namespaces) {
-        set use-namespaces =
+      if (or $superfluous-uses $dangling-namespaces) {
+        set use-namespaces = (
           all $uses |
             each { |use-info| put $use-info[namespace] } |
-            hash-set:from (all)
+            hash-set:from
+        )
 
         set accessed-namespaces = (
           ns-identifiers:parse $content |
-            each { |ns-identifier|
-              put $ns-identifier[namespace]
-            } |
-            hash-set:from (all)
+            each { |ns-identifier| put $ns-identifier[namespace] } |
+            hash-set:from
         )
       }
 
       var file-result = [&]
 
-      if $unreferenced-uses {
+      if $superfluous-uses {
         set file-result = (
-          assoc $file-result unreferenced-uses (-find-unreferenced-uses $uses $use-namespaces $accessed-namespaces)
+          -find-superfluous-uses $uses $use-namespaces $accessed-namespaces |
+            seq:empty-to-default [(all)] |
+            map:assoc-non-nil $file-result superfluous-uses (all)
         )
       }
 
       if $dangling-namespaces {
         set file-result = (
-          assoc $file-result dangling-namespaces (-find-dangling-namespaces $uses $use-namespaces $accessed-namespaces)
+          -find-dangling-namespaces $uses $use-namespaces $accessed-namespaces |
+            seq:empty-to-default [(all)] |
+            map:assoc-non-nil $file-result dangling-namespaces (all)
         )
       }
 
-      if $missing-relative-uses {
+      if $inexistent-relative-uses {
         set file-result = (
-          assoc $file-result missing-relative-uses (-find-missing-relative-uses $path $uses)
+          -find-inexistent-relative-uses $path $uses |
+            seq:empty-to-default [(all)] |
+            map:assoc-non-nil $file-result inexistent-relative-uses (all)
         )
       }
 
-      put $file-result
-    }
+      seq:empty-to-default $file-result
+    }]
   )
 
   if $interactive {

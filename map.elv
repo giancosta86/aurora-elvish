@@ -55,3 +55,11 @@ fn filter { |source key-value-predicate|
     } |
     make-map
 }
+
+fn assoc-non-nil { |map key value|
+  if $value {
+    assoc $map $key $value
+  } else {
+    put $map
+  }
+}
