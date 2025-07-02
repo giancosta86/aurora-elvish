@@ -5,8 +5,9 @@ fn is-empty { |container| == (count $container) 0 }
 
 fn is-non-empty { |container| != (count $container) 0 }
 
-fn enumerate { |consumer|
-  var index = 0
+#TODO! Test start-index!
+fn enumerate { |&start-index=0 consumer|
+  var index = (num $start-index)
 
   each { |item|
     $consumer $index $item

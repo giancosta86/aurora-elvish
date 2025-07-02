@@ -89,6 +89,19 @@ describe 'Enumerating' {
         should-be '0:A; 1:B; 2:C; '
     }
   }
+
+  describe 'when passing the first index' {
+    it 'should start from the given index' {
+      put [(all [A B C] | seq:enumerate &start-index=35 { |index value|
+        put [$index $value]
+      })] |
+        should-be [
+          [(num 35) A] #TODO! Inspect this, by removing the (num) call
+          [(num 36) B]
+          [(num 37) C]
+        ]
+    }
+  }
 }
 
 describe 'Iterating and spreading as consumer arguments' {

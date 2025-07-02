@@ -24,3 +24,11 @@ fn analyze-tree { |analyzers|
     }
   }
 }
+
+fn analyze-lines { |content line-number-text-consumer|
+  echo $content |
+    from-lines |
+    seq:enumerate &start-index=1 { |line-number line|
+      $line-number-text-consumer $line-number $line
+    }
+}
