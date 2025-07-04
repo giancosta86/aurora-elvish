@@ -1,7 +1,7 @@
 use re
 use ./analysis
 
-var -ns-identifier-regex = '(?m)\b(\S+?):((?:\S+)\b~?)'
+var -ns-identifier-regex = '([A-Za-z0-9\-]+):([A-Za-z0-9\-~:]+)'
 
 fn parse { |source-code|
   analysis:analyze-lines $source-code { |line-number line|

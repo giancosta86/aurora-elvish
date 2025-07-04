@@ -36,12 +36,14 @@ fn -find-inexistent-relative-uses { |path uses|
     }
 }
 
-fn find-errors { |
+fn find { |
+  &includes='**.elv'
+  &excludes=$nil
   &superfluous-uses=$true
   &dangling-namespaces=$true
   &inexistent-relative-uses=$true
 |
-  analysis:analyze-tree [{ |path content|
+  analysis:analyze-tree &includes=$includes &excludes=$excludes [{ |path content|
     var uses = [(uses:parse $content)]
 
     var use-namespaces

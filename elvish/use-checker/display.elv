@@ -2,25 +2,25 @@ use ../../console
 use ../../map
 use ../../seq
 
-fn -format-error { |color kind path line-number code|
-  console:echo (styled $kind': ' $color) $path':'$line-number': '(styled $code bold $color)
+fn -format-error { |color path line-number kind code|
+  console:echo $path':'$line-number': ' (styled $kind': ' $color) (styled $code bold $color)
 }
 
 fn -display-superfluous-uses { |path superfluous-uses|
   all $superfluous-uses | each { |error|
-    -format-error yellow 'Superfluous use' $path $error[line-number] $error[reference]
+    -format-error yellow $path $error[line-number] 'Superfluous use' $error[reference]
   }
 }
 
 fn -display-dangling-namespaces { |path dangling-namespaces|
   all $dangling-namespaces | each { |error|
-    -format-error yellow 'Dangling namespaces' $path $error[line-number] $error[namespace]':'$error[identifier]
+    -format-error yellow $path $error[line-number] 'Dangling namespaces' $error[namespace]':'$error[identifier]
   }
 }
 
 fn -display-inexistent-relative-uses { |path inexistent-relative-uses|
   all $inexistent-relative-uses | each { |error|
-    -format-error red 'Inexistent relative use' $path $error[line-number] $error[reference]
+    -format-error red $path $error[line-number] 'Inexistent relative use' $error[reference]
   }
 }
 

@@ -55,6 +55,52 @@ describe 'Parsing namespaced identifiers' {
           ]
       }
     }
+
+    describe 'parsing a functional identifier between brackets' {
+      it 'should work' {
+        -parse-single-identifier '&reporters=[$cli:display~]' |
+          should-be [
+            &line-number=1
+            &namespace=cli
+            &identifier=display~
+          ]
+      }
+    }
+
+    describe 'parsing a redirection merged with a scoped variable' {
+      it 'should work' {
+        -parse-single-identifier 'echo Test 2>$os:dev-null' |
+          should-be [
+            &line-number=1
+            &namespace=os
+            &identifier=dev-null
+          ]
+      }
+    }
+
+    describe 'parsing a string with escaped \n' {
+      it 'should find no identifier' {
+        ns-identifiers:parse 'Description:\nTest' |
+          count |
+          should-be 0
+      }
+    }
+
+    describe 'parsing a colon between two variables' {
+      it 'should find no identifier' {
+        ns-identifiers:parse "$alpha':'$beta" |
+          count |
+          should-be 0
+      }
+    }
+
+    describe 'parsing a colon followed by a space' {
+      it 'should find no identifier' {
+        ns-identifiers:parse 'Name: ' |
+          count |
+          should-be 0
+      }
+    }
   }
 
   describe 'when parsing multiple namespaced identifiers in the same source code' {

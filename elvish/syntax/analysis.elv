@@ -1,8 +1,21 @@
 use ../../map
 use ../../seq
 
-fn analyze-tree { |analyzers|
-  put **.elv | seq:reduce [&] { |results-by-file path|
+#TODO! Test includes and excludes!
+fn analyze-tree { |
+  &includes='**.elv'
+  &excludes=$nil
+  analyzers
+|
+  var paths-to-exclude = (
+    if $excludes {
+      eval 'put '$excludes
+    } else {
+      put []
+    }
+  )
+
+  eval 'put '$includes | seq:reduce [&] { |results-by-file path|
     var file-content = (slurp < $path)
 
     var results-by-analyzer = (all $analyzers |

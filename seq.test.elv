@@ -82,11 +82,11 @@ describe 'Enumerating' {
       var current-result = ''
 
       all [A B C] | seq:enumerate { |index value|
-        set current-result = $current-result''$index':'$value'; '
+        set current-result = $current-result''$index': '$value'; '
       }
 
       put $current-result |
-        should-be '0:A; 1:B; 2:C; '
+        should-be '0: A; 1: B; 2: C; '
     }
   }
 
