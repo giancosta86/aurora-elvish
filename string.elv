@@ -1,5 +1,4 @@
 use str
-use ./lang
 use ./map
 use ./seq
 

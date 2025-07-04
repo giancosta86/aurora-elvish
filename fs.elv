@@ -1,9 +1,7 @@
 use file
 use os
 use path
-use str
 use ./lang
-use ./seq
 
 fn touch { |path|
   print > $path

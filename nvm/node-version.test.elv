@@ -1,5 +1,4 @@
 use path
-use str
 use ../fs
 use ./node-version
 

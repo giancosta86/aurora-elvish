@@ -1,8 +1,5 @@
 use path
-use re
-use str
 use ../console
-use ../fs
 use ../lang
 use ../seq
 use ./namespace

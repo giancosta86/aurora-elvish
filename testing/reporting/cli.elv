@@ -1,8 +1,6 @@
 use str
 use ../../console
 use ../../lang
-use ../../map
-use ../../seq
 
 fn -print-indentation { |level|
   console:print (str:repeat ' ' (* $level 4))

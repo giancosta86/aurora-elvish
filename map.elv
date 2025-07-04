@@ -1,4 +1,3 @@
-use builtin
 use ./seq
 
 fn get-value { |&default=$nil source key|

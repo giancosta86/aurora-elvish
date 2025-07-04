@@ -1,6 +1,5 @@
 use os
 use path
-use str
 use ./console
 use ./fs
 use ./nvm

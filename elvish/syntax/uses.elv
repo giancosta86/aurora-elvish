@@ -1,5 +1,3 @@
-use epm #TODO! Detect this!
-use path
 use re
 use str
 use ../../string

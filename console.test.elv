@@ -1,4 +1,3 @@
-use ./command
 use ./console
 
 describe 'In console writing to stderr' {

@@ -1,7 +1,6 @@
 use os
 use path
 use re
-use str
 use ../console
 use ../lang
 use ../seq

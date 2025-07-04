@@ -1,8 +1,6 @@
-use os
 use str
 use ../command
 use ../console
-use ../lang
 use ../string
 
 fn -print-expected-and-actual { |inputs|
@@ -26,7 +24,7 @@ fn should-be { |&strict=$false expected|
         -print-expected-and-actual [
           &expected-description='Expected (strict)'
           &expected=$expected
-          &actual-description='Actual'
+          &actual-description='Actual (strict)'
           &actual=$actual
         ]
 
@@ -38,9 +36,9 @@ fn should-be { |&strict=$false expected|
 
       if (not-eq $expected-string $actual-string) {
         -print-expected-and-actual [
-          &expected-description='Expected (non-strict)'
+          &expected-description='Expected'
           &expected=$expected
-          &actual-description='Actual (non-strict)'
+          &actual-description='Actual'
           &actual=$actual
         ]
 

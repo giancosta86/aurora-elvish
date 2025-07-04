@@ -2,7 +2,6 @@ use str
 use ../command
 use ../console
 use ../exception
-use ../lang
 use ../map
 use ../seq
 

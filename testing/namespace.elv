@@ -1,6 +1,4 @@
 use path
-use ../console
-use ../map
 use ./assertions
 use ./describe-context
 
