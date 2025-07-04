@@ -58,6 +58,7 @@ fn -with-path-sandbox { |inputs|
     $block
   } finally {
     var parent-dir = (path:dir $path)
+
     tmp pwd = (lang:ternary (os:is-dir $parent-dir) $parent-dir $pwd)
 
     rimraf $path
@@ -94,6 +95,10 @@ fn -with-temp-object { |temp-path consumer|
   try {
     $consumer $temp-path
   } finally {
+    if (os:is-dir $temp-path) {
+      set pwd = (path:dir $temp-path)
+    }
+
     rimraf $temp-path
   }
 }
@@ -104,4 +109,17 @@ fn with-temp-file { |&dir='' consumer|
 
 fn with-temp-dir { |&dir='' consumer|
   -with-temp-object (os:temp-dir &dir=$dir) $consumer
+}
+
+fn wildcard { |includes-wildcard &excludes=$nil|
+  fn generate-included-paths {
+    eval 'put '$includes-wildcard
+  }
+
+  if $excludes {
+    generate-included-paths |
+      keep-if { |path| not ($excludes $path) }
+  } else {
+    generate-included-paths
+  }
 }

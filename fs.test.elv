@@ -410,3 +410,52 @@ describe 'Consuming a temp directory path' {
       should-be $false
   }
 }
+
+describe 'Using a wildcard string to get a file list' {
+  fn -with-test-tree { |block|
+    fs:with-temp-dir { |temp-dir|
+      tmp pwd = $temp-dir
+
+      fs:touch A.elv
+      fs:touch B.elv
+
+      var q-dir = (path:join P Q)
+      os:mkdir-all $q-dir
+
+      fs:touch (path:join $q-dir R.elv)
+
+      $block
+    }
+  }
+
+  describe 'when only passing the includes wildcard' {
+    it 'should display the matching paths' {
+      -with-test-tree {
+        put [(
+          fs:wildcard '**.elv' |
+            order
+        )] |
+          should-be [
+            A.elv
+            B.elv
+            P/Q/R.elv
+          ]
+      }
+    }
+  }
+
+  describe 'when passing an excluding predicate' {
+    it 'should return only the acceptable paths' {
+      -with-test-tree {
+        put [(
+          fs:wildcard '**.elv' &excludes={ |path| ==s (path:base $path) B.elv } |
+            order
+        )] |
+          should-be [
+            A.elv
+            P/Q/R.elv
+          ]
+      }
+    }
+  }
+}

@@ -117,6 +117,8 @@ fn -run-test-check { |inputs|
 
   var inexistent-relative-uses = $inputs[inexistent-relative-uses]
 
+  var display-results = $inputs[display-results]
+
   fs:with-temp-dir { |temp-dir|
     tmp pwd = $temp-dir
 
@@ -136,6 +138,7 @@ describe 'Checking the use directives in a source file' {
       &superfluous-uses=$true
       &dangling-namespaces=$false
       &inexistent-relative-uses=$false
+      &display-results=$false
     ] |
       should-be [
         &alpha.elv=[
@@ -152,6 +155,7 @@ describe 'Checking the use directives in a source file' {
       &superfluous-uses=$false
       &dangling-namespaces=$true
       &inexistent-relative-uses=$false
+      &display-results=$false
     ] |
       should-be [
         &alpha.elv=[
@@ -165,6 +169,7 @@ describe 'Checking the use directives in a source file' {
       &superfluous-uses=$false
       &dangling-namespaces=$false
       &inexistent-relative-uses=$true
+      &display-results=$false
     ] |
       should-be [
         &alpha.elv=    [
@@ -181,6 +186,7 @@ describe 'Checking the use directives in a source file' {
       &superfluous-uses=$true
       &dangling-namespaces=$true
       &inexistent-relative-uses=$true
+      &display-results=$false
     ] |
       should-be [
         &alpha.elv=[
@@ -196,6 +202,11 @@ describe 'Checking the use directives in a source file' {
   }
 
   it 'should run interactively' {
-    use-checker:find-errors &display-results &superfluous-uses &dangling-namespaces &inexistent-relative-uses
+    -run-test-check [
+      &superfluous-uses=$true
+      &dangling-namespaces=$true
+      &inexistent-relative-uses=$true
+      &display-results=$true
+    ]
   }
 }

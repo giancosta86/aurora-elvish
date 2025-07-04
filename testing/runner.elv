@@ -1,20 +1,17 @@
 use path
 use ../console
+use ../fs
 use ../seq
 use ./namespace
 use ./reporting/cli
 
 var -default-includes = '**[type:regular][nomatch-ok].test.elv'
 
-fn -get-test-files { |includes|
-  eval 'put '$includes
-}
-
-fn has-tests { |&includes=$-default-includes|
-  -get-test-files $includes |
-      take 1 |
-      count |
-      not-eq (all) 0
+fn has-tests { |&includes=$-default-includes &excludes=$nil|
+  fs:wildcard $includes &excludes=$excludes |
+    take 1 |
+    count |
+    not-eq (all) 0
 }
 
 fn -run-file { |&fail-fast=$false source-path test-namespace|
@@ -25,14 +22,15 @@ fn -run-file { |&fail-fast=$false source-path test-namespace|
   eval &ns=$test-namespace $source-string
 }
 
-fn run { |
+fn -run { |
   &includes=$-default-includes
+  &excludes=$nil
   &reporters=[$cli:display~]
   &fail-fast=$false
 |
   var namespace-controller = (namespace:create &fail-fast=$fail-fast)
 
-  -get-test-files $includes |
+  fs:wildcard $includes &excludes=$excludes |
     each { |wildcard-test-file-path|
       var test-file-path = (path:abs $wildcard-test-file-path)
 
@@ -60,11 +58,12 @@ fn run { |
 
 fn test { |
   &includes=$-default-includes
+  &excludes=$nil
   &reporters=[$cli:display~]
   &fail-fast=$false
   &output-failures=$false
 |
-  var run-output = (run &includes=$includes &reporters=$reporters &fail-fast=$fail-fast | only-values)
+  var run-output = (-run &includes=$includes &excludes=$excludes &reporters=$reporters &fail-fast=$fail-fast | only-values)
 
   var stats = ($run-output[get-stats])
 
