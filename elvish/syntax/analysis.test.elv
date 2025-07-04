@@ -101,17 +101,17 @@ describe 'Analyzing a file, line by line' {
       should-be [
         [
           alpha.elv
-          (num 1)
+          1
           'First line'
         ]
         [
           alpha.elv
-          (num 2)
+          2
           'Second line'
         ]
         [
           alpha.elv
-          (num 3)
+          3
           'Third line'
         ]
       ]

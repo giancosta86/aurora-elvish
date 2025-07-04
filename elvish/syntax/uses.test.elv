@@ -33,6 +33,11 @@ describe 'Parsing the use declarations in Elvish code' {
       put $parsed-use[kind] |
         should-be $uses:standard
     }
+
+    it 'should return the line number' {
+      put $parsed-use[line-number] |
+        should-be 1
+    }
   }
 
   describe 'when parsing an aliased standard import' {
@@ -56,6 +61,11 @@ describe 'Parsing the use declarations in Elvish code' {
     it 'should be of standard kind' {
       put $parsed-use[kind] |
         should-be $uses:standard
+    }
+
+    it 'should return the line number' {
+      put $parsed-use[line-number] |
+        should-be 1
     }
   }
 
@@ -81,6 +91,11 @@ describe 'Parsing the use declarations in Elvish code' {
       put $parsed-use[kind] |
         should-be $uses:absolute
     }
+
+    it 'should return the line number' {
+      put $parsed-use[line-number] |
+        should-be 1
+    }
   }
 
   describe 'when parsing an aliased absolute import' {
@@ -104,6 +119,11 @@ describe 'Parsing the use declarations in Elvish code' {
     it 'should be of absolute kind' {
       put $parsed-use[kind] |
         should-be $uses:absolute
+    }
+
+    it 'should return the line number' {
+      put $parsed-use[line-number] |
+        should-be 1
     }
   }
 
@@ -129,6 +149,11 @@ describe 'Parsing the use declarations in Elvish code' {
       put $parsed-use[kind] |
         should-be $uses:relative
     }
+
+    it 'should return the line number' {
+      put $parsed-use[line-number] |
+        should-be 1
+    }
   }
 
   describe 'parsing an aliased relative import' {
@@ -153,11 +178,16 @@ describe 'Parsing the use declarations in Elvish code' {
       put $parsed-use[kind] |
         should-be $uses:relative
     }
+
+    it 'should return the line number' {
+      put $parsed-use[line-number] |
+        should-be 1
+    }
   }
 
   describe 'when parsing multiple uses in the same source code' {
-    var parsed-uses = [(uses:parse '
-      use str
+    var parsed-uses = [(
+      uses:parse 'use str
       use str std-str
       use github.com/giancosta86/aurora-elvish/console
       use github.com/giancosta86/aurora-elvish/console my-console
@@ -171,63 +201,69 @@ describe 'Parsing the use declarations in Elvish code' {
     }
 
     it 'should parse the standard import' {
-      has-value $parsed-uses [
-        &reference=str
-        &alias=$nil
-        &namespace=str
-        &kind=$uses:standard
-      ] |
-        should-be $true
+      put $parsed-uses[0] |
+        should-be [
+          &line-number=1
+          &reference=str
+          &alias=$nil
+          &namespace=str
+          &kind=$uses:standard
+        ]
     }
 
     it 'should parse the aliased standard import' {
-      has-value $parsed-uses [
-        &reference=str
-        &alias=std-str
-        &namespace=std-str
-        &kind=$uses:standard
-      ] |
-        should-be $true
+      put $parsed-uses[1] |
+          should-be [
+          &line-number=2
+          &reference=str
+          &alias=std-str
+          &namespace=std-str
+          &kind=$uses:standard
+        ]
     }
 
     it 'should parse the absolute import' {
-      has-value $parsed-uses [
-        &reference=github.com/giancosta86/aurora-elvish/console
-        &alias=$nil
-        &namespace=console
-        &kind=$uses:absolute
-      ] |
-        should-be $true
+      put $parsed-uses[2] |
+        should-be [
+          &line-number=3
+          &reference=github.com/giancosta86/aurora-elvish/console
+          &alias=$nil
+          &namespace=console
+          &kind=$uses:absolute
+        ]
     }
 
     it 'should parse the aliased absolute import' {
-      has-value $parsed-uses [
-        &reference=github.com/giancosta86/aurora-elvish/console
-        &alias=my-console
-        &namespace=my-console
-        &kind=$uses:absolute
-      ] |
-        should-be $true
+      put $parsed-uses[3] |
+        should-be [
+          &line-number=4
+          &reference=github.com/giancosta86/aurora-elvish/console
+          &alias=my-console
+          &namespace=my-console
+          &kind=$uses:absolute
+        ]
     }
 
     it 'should parse the relative import' {
-      has-value $parsed-uses [
-        &reference=../../alpha/beta
-        &alias=$nil
-        &namespace=beta
-        &kind=$uses:relative
-      ] |
-        should-be $true
+      put $parsed-uses[4] |
+        should-be [
+          &line-number=5
+          &reference=../../alpha/beta
+          &alias=$nil
+          &namespace=beta
+          &kind=$uses:relative
+        ]
     }
 
     it 'should parse the aliased relative import' {
-      has-value $parsed-uses [
-        &reference=../../alpha/beta
-        &alias=my-beta
-        &namespace=my-beta
-        &kind=$uses:relative
-      ] |
-        should-be $true
+      put $parsed-uses[5] |
+        should-be [
+          &line-number=6
+          &reference=../../alpha/beta
+          &alias=my-beta
+          &namespace=my-beta
+          &kind=$uses:relative
+        ]
     }
   }
 }

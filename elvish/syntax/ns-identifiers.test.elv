@@ -16,6 +16,7 @@ describe 'Parsing namespaced identifiers' {
       it 'should work' {
         -parse-single-identifier 'alpha:beta' |
           should-be [
+            &line-number=1
             &namespace=alpha
             &identifier=beta
           ]
@@ -26,6 +27,7 @@ describe 'Parsing namespaced identifiers' {
       it 'should work' {
         -parse-single-identifier 'alpha:fi~' |
           should-be [
+            &line-number=1
             &namespace=alpha
             &identifier=fi~
           ]
@@ -36,6 +38,7 @@ describe 'Parsing namespaced identifiers' {
       it 'should work' {
         -parse-single-identifier '$alpha:my-var' |
           should-be [
+            &line-number=1
             &namespace=alpha
             &identifier=my-var
           ]
@@ -46,6 +49,7 @@ describe 'Parsing namespaced identifiers' {
       it 'should work' {
         -parse-single-identifier '$alpha:beta:gamma:delta' |
           should-be [
+            &line-number=1
             &namespace=alpha
             &identifier=beta:gamma:delta
           ]
@@ -55,8 +59,7 @@ describe 'Parsing namespaced identifiers' {
 
   describe 'when parsing multiple namespaced identifiers in the same source code' {
     var parsed-identifiers = [(
-      ns-identifiers:parse '
-      This is some sample string that should be a source code file.
+      ns-identifiers:parse 'This is some sample string that should be a source code file.
 
       Colons followed by spaces like this: should not be parsed. Nor :a, :b or similar ones.
 
@@ -76,35 +79,39 @@ describe 'Parsing namespaced identifiers' {
     }
 
     it 'should parse a basic identifier' {
-      has-value $parsed-identifiers [
-        &namespace=alpha
-        &identifier=beta
-      ] |
-        should-be $true
+      put $parsed-identifiers[0] |
+        should-be [
+          &line-number=5
+          &namespace=alpha
+          &identifier=beta
+        ]
     }
 
     it 'should parse a callable identifier' {
-      has-value $parsed-identifiers [
-        &namespace=alpha
-        &identifier=fi~
-      ] |
-        should-be $true
+      put $parsed-identifiers[1] |
+        should-be [
+          &line-number=7
+          &namespace=alpha
+          &identifier=fi~
+        ]
     }
 
     it 'should parse a variable identifier' {
-      has-value $parsed-identifiers [
-        &namespace=alpha
-        &identifier=my-var
-      ] |
-        should-be $true
+      put $parsed-identifiers[2] |
+        should-be [
+          &line-number=9
+          &namespace=alpha
+          &identifier=my-var
+        ]
     }
 
     it 'should parse a multi-namespace identifier' {
-      has-value $parsed-identifiers [
-        &namespace=alpha
-        &identifier=beta:gamma:delta
-      ] |
-        should-be $true
+      put $parsed-identifiers[3] |
+        should-be [
+          &line-number=11
+          &namespace=alpha
+          &identifier=beta:gamma:delta
+        ]
     }
   }
 }

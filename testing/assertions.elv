@@ -3,6 +3,7 @@ use str
 use ../command
 use ../console
 use ../lang
+use ../string
 
 fn -print-expected-and-actual { |inputs|
   var expected-description = $inputs[expected-description]
@@ -19,14 +20,11 @@ fn -print-expected-and-actual { |inputs|
 }
 
 fn should-be { |&strict=$false expected|
-  var is-string-expected = (==s (kind-of $expected) 'string')
-  var actually-strict = (or $strict (not $is-string-expected))
-
   one | each { |actual|
-    if $actually-strict {
+    if $strict {
       if (not-eq $expected $actual) {
         -print-expected-and-actual [
-          &expected-description='Expected'
+          &expected-description='Expected (strict)'
           &expected=$expected
           &actual-description='Actual'
           &actual=$actual
@@ -35,15 +33,15 @@ fn should-be { |&strict=$false expected|
         fail 'strict should-be assertion failed'
       }
     } else {
-      var expected-string = (to-string $expected)
-      var actual-string = (to-string $actual)
+      var expected-string = (string:get-minimal $expected)
+      var actual-string = (string:get-minimal $actual)
 
       if (not-eq $expected-string $actual-string) {
         -print-expected-and-actual [
-          &expected-description='Expected string'
-          &expected=$expected-string
-          &actual-description='Actual string'
-          &actual=$actual-string
+          &expected-description='Expected (non-strict)'
+          &expected=$expected
+          &actual-description='Actual (non-strict)'
+          &actual=$actual
         ]
 
         fail 'should-be assertion failed'
