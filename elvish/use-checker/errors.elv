@@ -1,6 +1,5 @@
 use os
 use path
-use ../../console
 use ../../hash-set
 use ../../map
 use ../../seq
@@ -82,8 +81,6 @@ fn find { |
           seq:empty-to-default [(all)] |
           map:assoc-non-nil $file-result dangling-namespaces (all)
       )
-
-      console:inspect &emoji=📁 'FILE RESULT AFTER DANGLING - '$path $file-result
     }
 
     if $inexistent-relative-uses {

@@ -14,7 +14,7 @@ fn -display-superfluous-uses { |path superfluous-uses|
 
 fn -display-dangling-namespaces { |path dangling-namespaces|
   all $dangling-namespaces | each { |error|
-    -format-error yellow $path $error[line-number] 'Dangling namespaces' $error[namespace]':'$error[identifier]
+    -format-error yellow $path $error[line-number] 'Dangling namespace' $error[namespace]':'$error[identifier]
   }
 }
 
