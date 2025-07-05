@@ -79,8 +79,6 @@ fn -do-inject { |source-directory mode|
 }
 
 fn inject { | mode |
-  console:inspect-inputs $inputs
-
   -print-exports 'before the injection'
 
   -do-inject $source-directory $mode
