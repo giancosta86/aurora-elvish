@@ -1,5 +1,5 @@
-use ./testing/runner
+use ./testing/test
 
-var has-tests~ = $runner:has-tests~
+var has-tests~ = $test:has-tests~
 
-var test~ = $runner:test~
+var test~ = $test:test~

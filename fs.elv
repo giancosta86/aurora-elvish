@@ -1,6 +1,7 @@
 use file
 use os
 use path
+use ./hash-set
 use ./lang
 
 fn touch { |path|
@@ -111,15 +112,20 @@ fn with-temp-dir { |&dir='' consumer|
   -with-temp-object (os:temp-dir &dir=$dir) $consumer
 }
 
-fn wildcard { |includes-wildcard &excludes=$nil|
-  fn generate-included-paths {
-    eval 'put '$includes-wildcard
+fn wildcard { |includes &excludes=$nil|
+  fn expand-wildcard { |wildcard|
+    eval 'put '$wildcard
   }
 
   if $excludes {
-    generate-included-paths |
-      keep-if { |path| not ($excludes $path) }
+    var exclude-set = (
+      expand-wildcard $excludes |
+        hash-set:from
+    )
+
+    wildcard $includes &excludes=$nil |
+      keep-if { |path| not (hash-set:contains $exclude-set $path) }
   } else {
-    generate-included-paths
+    expand-wildcard $includes
   }
 }

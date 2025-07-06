@@ -444,11 +444,11 @@ describe 'Using a wildcard string to get a file list' {
     }
   }
 
-  describe 'when passing an excluding predicate' {
+  describe 'when passing an excluding wildcard' {
     it 'should return only the acceptable paths' {
       -with-test-tree {
         put [(
-          fs:wildcard '**.elv' &excludes={ |path| ==s (path:base $path) B.elv } |
+          fs:wildcard '**.elv' &excludes='**B.elv' |
             order
         )] |
           should-be [
