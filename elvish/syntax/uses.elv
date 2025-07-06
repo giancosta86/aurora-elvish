@@ -9,7 +9,8 @@ var standard = 'Standard'
 var absolute = 'Absolute'
 var relative = 'Relative'
 
-fn parse { |source-code|
+#TODO! Test that you can filter out use kinds!
+fn parse { |&include-standard=$true &include-absolute=$true &include-relative=$true source-code|
   analysis:analyze-lines $source-code { |line-number line|
     re:find $-use-regex $line | each { |match|
       var groups = $match[groups]
@@ -28,6 +29,14 @@ fn parse { |source-code|
           put $absolute
         }
       )
+
+      if (or ^
+        (and (==s $kind $standard) (not $include-standard)) ^
+        (and (==s $kind $absolute) (not $include-absolute)) ^
+        (and (==s $kind $relative) (not $include-relative)) ^
+      ) {
+        continue
+      }
 
       var namespace = (coalesce $alias $reference-components[-1])
 

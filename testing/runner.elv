@@ -51,8 +51,8 @@ fn -run { |
   console:echo
 
   put [
-    &get-stats=$namespace-controller[get-stats]
-    &get-outcome-map=$namespace-controller[get-outcome-map]
+    &stats=($namespace-controller[get-stats])
+    &outcome-map=($namespace-controller[get-outcome-map])
   ]
 }
 
@@ -61,11 +61,10 @@ fn test { |
   &excludes=$nil
   &reporters=[$cli:display~]
   &fail-fast=$false
-  &output-failures=$false
 |
-  var run-output = (-run &includes=$includes &excludes=$excludes &reporters=$reporters &fail-fast=$fail-fast | only-values)
+  var run-result = (-run &includes=$includes &excludes=$excludes &reporters=$reporters &fail-fast=$fail-fast | only-values)
 
-  var stats = ($run-output[get-stats])
+  var stats = $run-result[stats]
 
   if $stats[is-ok] {
     var message = 'All the '$stats[total-tests]' tests passed.'
@@ -75,7 +74,5 @@ fn test { |
     console:echo (styled $message red bold)
   }
 
-  if $output-failures {
-    put $stats[total-failed]
-  }
+  put $run-result
 }
