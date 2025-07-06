@@ -11,7 +11,7 @@ fn has-tests { |&includes=$-default-includes &excludes=$nil|
   fs:wildcard $includes &excludes=$excludes |
     take 1 |
     count |
-    not-eq (all) 0
+    != (all) 0
 }
 
 fn -run-file { |&fail-fast=$false source-path test-namespace|
