@@ -1,0 +1,8 @@
+use ./sha
+
+describe 'SHA256' {
+  it 'should be computed' {
+    sha:compute256 'Hello, world!' |
+      should-be d9014c4624844aa5bac314773d6b689ad467fa4e1d1a50a1b8a99d5a95f72ff5
+  }
+}
