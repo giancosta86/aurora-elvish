@@ -59,7 +59,7 @@ fn register { |@arguments|
 
       $before-block $next-dir
 
-      log &emoji=🚪 Done BEFORE block for $next-dir!
+      log &emoji=🚪 Done BEFORE block for $next-dir
     } catch e {
       show $e
     }
@@ -85,7 +85,7 @@ fn register { |@arguments|
 
       $after-block
 
-      log &emoji=🪟 Done AFTER block for $pwd!
+      log &emoji=🪟 Done AFTER block for $pwd
     } catch e {
       show $e
     } finally {
