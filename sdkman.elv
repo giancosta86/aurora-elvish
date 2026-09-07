@@ -1,4 +1,4 @@
-use ./-sdkman/hooks
+use ./-sdkman/chdir-hooks
 use ./-sdkman/paths
 use ./-sdkman/wrapper
 
@@ -6,7 +6,7 @@ var sdk-file = $paths:sdk-file
 
 var sdk~ = $wrapper:sdk~
 
-var register-chdir-hooks~ = $hooks:register-chdir-hooks~
+var register-chdir-hooks~ = $chdir-hooks:register~
 
 var get-sdk-directory~ = $paths:get-sdk-directory~
 
@@ -19,7 +19,7 @@ fn setup-jvm-homes {
   setup-sdk-homes
 }
 
-var setup-env~ = $hooks:setup-env~
+var setup-env~ = $chdir-hooks:setup-env~
 
 fn sdkman { |@arguments|
   deprecate 'Please, call `sdk` instead'
