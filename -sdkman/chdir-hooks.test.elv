@@ -1,6 +1,6 @@
 use os
 use path
-use ./hooks
+use ./chdir-hooks
 use ./paths
 use ./test-shared
 use ./wrapper
@@ -23,11 +23,11 @@ fn get-sdkman-runs { |block|
           cd $source-dir
 
           fs:with-temp-dir { |dest-dir|
-            hooks:-before-chdir-hook $dest-dir
+            chdir-hooks:-before-cd $dest-dir
 
             cd $dest-dir
 
-            hooks:-after-chdir-hook $dest-dir
+            chdir-hooks:-after-cd
           }
         }
       } |
@@ -45,11 +45,11 @@ fn get-sdkman-runs { |block|
           } > $paths:sdk-file
 
           fs:with-temp-dir { |dest-dir|
-            hooks:-before-chdir-hook $dest-dir
+            chdir-hooks:-before-cd $dest-dir
 
             cd $dest-dir
 
-            hooks:-after-chdir-hook $dest-dir
+            chdir-hooks:-after-cd
           }
         }
       } |
@@ -69,11 +69,11 @@ fn get-sdkman-runs { |block|
               echo maven=3.9.9
             } > (path:join $dest-dir $paths:sdk-file)
 
-            hooks:-before-chdir-hook $dest-dir
+            chdir-hooks:-before-cd $dest-dir
 
             cd $dest-dir
 
-            hooks:-after-chdir-hook $dest-dir
+            chdir-hooks:-after-cd
           }
         }
       } |
@@ -99,11 +99,11 @@ fn get-sdkman-runs { |block|
               echo maven=3.9.9
             } > (path:join $dest-dir $paths:sdk-file)
 
-            hooks:-before-chdir-hook $dest-dir
+            chdir-hooks:-before-cd $dest-dir
 
             cd $dest-dir
 
-            hooks:-after-chdir-hook $dest-dir
+            chdir-hooks:-after-cd
           }
         }
       } |
@@ -121,7 +121,7 @@ fn get-sdkman-runs { |block|
           set paths = [DODO]
         }
 
-        hooks:setup-env
+        chdir-hooks:setup-env
 
         put $paths |
           should-be [DODO]
@@ -146,7 +146,7 @@ fn get-sdkman-runs { |block|
           }
 
           fs:within-temp-dir {
-            hooks:setup-env
+            chdir-hooks:setup-env
           }
 
           get-env JAVA_HOME |
