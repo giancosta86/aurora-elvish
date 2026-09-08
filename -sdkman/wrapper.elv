@@ -27,7 +27,7 @@ fn -run-sdkman { |@arguments|
   -ensure-installed
 
   str:join ' ' $arguments |
-    put "show_path() { echo $PATH | tr ':' '\n'; } && OLD_PATH=""$PATH"" && echo 🐼 BEFORE INIT: && show_path && source '"$paths:sdkman-script"' && export PATH=""$OLD_PATH"" && echo 🦫 AFTER RESTORE: && show_path && sdk "(all)" && echo 🦋 AFTER SDK: && show_path" |
+    put 'set OLD_PATH="$PATH" && '$paths:init-script' && export PATH="$OLD_PATH" && sdk '(all) |
     command:update-env-via-bash [PATH SDKMAN_ENV]
 }
 
