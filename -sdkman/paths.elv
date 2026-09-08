@@ -70,3 +70,31 @@ fn get-sdkfile-candidates {
     } |
         make-map
 }
+
+#
+# First removes from PATH every reference to SDKMAN candidates,
+# then prepends the "current" directory entry (if existing) of each installed candidate.
+#
+fn get-with-current-candidates {
+  var paths-without-candidates = [(
+    all $paths |
+      keep-if { |path|
+        not (str:has-prefix $path (path:join $sdkman-home candidates))
+      }
+  )]
+
+  var current-candidate-paths = [(
+    put $sdkman-home/candidates/*[nomatch-ok][type:dir] | each { |candidate-dir|
+      var current-path = (path:join $candidate-dir current)
+
+      if (os:exists $current-path) {
+        put $current-path
+      }
+    }
+  )]
+
+  put [(
+    all $current-candidate-paths
+    all $paths-without-candidates
+  )]
+}

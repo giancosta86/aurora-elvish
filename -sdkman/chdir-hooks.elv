@@ -38,16 +38,12 @@ fn -after-cd {
   paths:setup-sdk-homes
 }
 
-fn -run-sdkman-to-update-env-vars {
-  wrapper:sdk version > $os:dev-null 2>&1
-}
-
 #
 # Registers the chdir hooks for SDKMAN, after ensuring the related env variables;
 # finally, runs the after-cd hook.
 #
 fn register {
-  -run-sdkman-to-update-env-vars
+  set paths = (paths:get-with-current-candidates)
 
   chdir-hooks:register [
     &debug-id='sdkman'
@@ -63,7 +59,7 @@ fn register {
 # then runs the post-cd hook without installing it.
 #
 fn setup-env {
-  -run-sdkman-to-update-env-vars
+  set paths = (paths:get-with-current-candidates)
 
   $-after-cd~
 }

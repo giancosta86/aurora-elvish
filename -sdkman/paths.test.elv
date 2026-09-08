@@ -1,3 +1,4 @@
+use os
 use path
 use ./paths
 use ./test-shared
@@ -78,6 +79,63 @@ use ./test-shared
               &java=ALPHA
               &maven=BETA
               &gradle=GAMMA
+            ]
+        }
+      }
+    }
+
+    >> 'getting with current candidates' {
+      >> 'when there are no candidates' {
+        fs:within-temp-dir {
+          tmp paths:sdkman-home = $pwd
+
+          tmp paths = [
+            X
+            (path:join $pwd candidates dodo)
+            Y
+            (path:join $pwd candidates yogi)
+            Z
+          ]
+
+          paths:get-with-current-candidates |
+            should-be [
+              X
+              Y
+              Z
+            ]
+        }
+      }
+
+      >> 'when there are candidates' {
+        fs:within-temp-dir {
+          tmp paths:sdkman-home = $pwd
+
+          tmp paths = [
+            X
+            (path:join $pwd candidates dodo)
+            Y
+            (path:join $pwd candidates yogi)
+            Z
+          ]
+
+          path:join candidates alpha current |
+            os:mkdir-all (all)
+
+          path:join candidates beta current |
+            os:mkdir-all (all)
+
+          path:join candidates gamma current |
+            os:mkdir-all (all)
+
+          paths:get-with-current-candidates |
+            all (all) |
+            should-emit &any-order [
+              (path:join $pwd candidates alpha current)
+              (path:join $pwd candidates beta current)
+              (path:join $pwd candidates gamma current)
+              X
+              Y
+              Z
             ]
         }
       }
