@@ -5,8 +5,6 @@ use str
 
 pragma unknown-command = disallow
 
-var -which~ = (external which)
-
 var sdkman-home = (path:join ~ .sdkman)
 
 var init-script = (path:join $sdkman-home bin sdkman-init.sh)
@@ -14,10 +12,32 @@ var init-script = (path:join $sdkman-home bin sdkman-init.sh)
 var sdk-file = .sdkmanrc
 
 #
-# Returns the absolute path of the directory containing the requested SDK.
+# Emits the absolute path of the directory containing the requested SDK:
 #
-fn get-sdk-directory { |candidate version|
-  path:join $sdkman-home candidates $candidate $version
+# * if the &version flag is passed, the directory will be the one of that specific version;
+#
+# * otherwise, the root directory for the candidate will be emitted.
+#
+fn get-candidate-dir { |candidate &version=$nil|
+  var candidate-home = (
+    path:join $sdkman-home candidates $candidate
+  )
+
+  if $version {
+    path:join $candidate-home $version
+  } else {
+    put $candidate-home
+  }
+}
+
+#
+# Iterates over the candidates in the "candidates" directory,
+# passing each candidate name to the given block.
+#
+fn each-candidate { |candidate-consumer|
+  put $sdkman-home/candidates/*[type:dir][nomatch-ok] |
+    each $path:base~ |
+    each $candidate-consumer
 }
 
 #
@@ -27,22 +47,37 @@ fn get-candidate-home-var { |candidate|
   put (str:to-upper $candidate)'_HOME'
 }
 
-#
-# Defines a *_HOME variable for each SDK candidate found in the PATH.
-#
-fn setup-sdk-homes {
-  put $sdkman-home/candidates/*[nomatch-ok][type:dir] | each { |candidate-root|
-    all $paths | each { |current-path|
-      if (str:has-prefix $current-path $candidate-root) {
-        var home-path = (path:dir $current-path)
+fn -setup-candidate-home { |candidate|
+  var home-var = (get-candidate-home-var $candidate)
 
-        var candidate = (path:base $candidate-root)
+  var candidate-root = (get-candidate-dir $candidate)
 
-        get-candidate-home-var $candidate |
-          set-env (all) $home-path
-      }
+  all $paths | each { |current-path|
+    if (str:has-prefix $current-path $candidate-root) {
+      var home-path = (
+        if (eq (path:base $current-path) bin) {
+          path:dir $current-path
+        } else {
+          put $current-path
+        }
+      )
+
+      set-env $home-var $home-path
+
+      return
     }
   }
+
+  unset-env $home-var
+}
+
+#
+# Defines a *_HOME variable for each SDK candidate found in PATH.
+#
+# If a candidate has no related PATH entry, its *_HOME is unset.
+#
+fn setup-sdk-homes {
+  each-candidate $-setup-candidate-home~
 }
 
 #
@@ -72,8 +107,14 @@ fn get-sdkfile-candidates {
 }
 
 #
-# First removes from PATH every reference to SDKMAN candidates,
-# then prepends the "current" directory entry (if existing) of each installed candidate.
+# First removes from PATH every reference to SDKMAN candidates;
+# then, for each candidate found, prepends to PATH:
+#
+# * the "current/bin" file system object, if existing
+#
+# * the "current" file system object, if existing.
+#
+# If no path representative can be found, the candidate in question won't be added to PATH.
 #
 fn get-with-current-candidates {
   var paths-without-candidates = [(
@@ -84,8 +125,10 @@ fn get-with-current-candidates {
   )]
 
   var current-candidate-paths = [(
-    put $sdkman-home/candidates/*[nomatch-ok][type:dir] | each { |candidate-dir|
-      var current-path = (path:join $candidate-dir current)
+    each-candidate { |candidate|
+      var candidate-root = (get-candidate-dir $candidate)
+
+      var current-path = (path:join $candidate-root current)
 
       var bin-path = (path:join $current-path bin)
 

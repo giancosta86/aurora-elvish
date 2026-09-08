@@ -3,14 +3,15 @@ use path
 use ../fs
 use ./paths
 
-fn with-temp-candidate { |candidate block|
-  fs:with-temp-dir { |temp-dir|
-    tmp paths:sdkman-home = $temp-dir
+fn within-temp-sdkman-home { |&candidates=[] block|
+  fs:within-temp-dir {
+    tmp paths:sdkman-home = $pwd
 
-    var candidate-root = (path:join $temp-dir candidates $candidate)
+    all $candidates | each { |candidate|
+      paths:get-candidate-dir $candidate |
+        os:mkdir-all (all)
+    }
 
-    os:mkdir-all $candidate-root
-
-    $block $candidate-root
+    $block
   }
 }

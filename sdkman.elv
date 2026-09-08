@@ -8,7 +8,13 @@ var sdk~ = $wrapper:sdk~
 
 var register-chdir-hooks~ = $chdir-hooks:register~
 
-var get-sdk-directory~ = $paths:get-sdk-directory~
+var get-candidate-dir~ = $paths:get-candidate-dir~
+
+fn get-sdk-directory { |candidate version|
+  deprecate 'Use get-candidate-dir instead!'
+
+  get-candidate-dir $candidate &version=$version
+}
 
 var get-candidate-home-var~ = $paths:get-candidate-home-var~
 
