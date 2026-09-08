@@ -121,7 +121,7 @@ use ./test-shared
           path:join candidates alpha current |
             os:mkdir-all (all)
 
-          path:join candidates beta current |
+          path:join candidates beta current bin |
             os:mkdir-all (all)
 
           path:join candidates gamma current |
@@ -131,7 +131,7 @@ use ./test-shared
             all (all) |
             should-emit &any-order [
               (path:join $pwd candidates alpha current)
-              (path:join $pwd candidates beta current)
+              (path:join $pwd candidates beta current bin)
               (path:join $pwd candidates gamma current)
               X
               Y

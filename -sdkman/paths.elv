@@ -87,7 +87,11 @@ fn get-with-current-candidates {
     put $sdkman-home/candidates/*[nomatch-ok][type:dir] | each { |candidate-dir|
       var current-path = (path:join $candidate-dir current)
 
-      if (os:exists $current-path) {
+      var bin-path = (path:join $current-path bin)
+
+      if (os:exists $bin-path) {
+        put $bin-path
+      } elif (os:exists $current-path) {
         put $current-path
       }
     }
