@@ -116,7 +116,7 @@ fn get-sdkfile-candidates {
 #
 # If no path representative can be found, the candidate in question won't be added to PATH.
 #
-fn get-with-current-candidates {
+fn -get-with-current-candidates {
   var paths-without-candidates = [(
     all $paths |
       keep-if { |path|
@@ -145,3 +145,14 @@ fn get-with-current-candidates {
     all $paths-without-candidates
   )]
 }
+
+#
+# Runs the initialization provided by SDKMAN's init script.
+#
+fn -init-vars {
+  set paths = (-get-with-current-candidates)
+
+  setup-sdk-homes
+}
+
+-init-vars

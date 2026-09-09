@@ -36,12 +36,3 @@ fn sdkman { |@arguments|
 }
 
 var get-sdkfile-candidates~ = $paths:get-sdkfile-candidates~
-
-
-fn -init {
-  set paths = (paths:get-with-current-candidates)
-
-  paths:setup-sdk-homes
-}
-
--init

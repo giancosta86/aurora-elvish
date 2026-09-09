@@ -195,7 +195,7 @@ use ./test-shared
             Z
           ]
 
-          paths:get-with-current-candidates |
+          paths:-get-with-current-candidates |
             should-be [
               X
               Y
@@ -221,7 +221,7 @@ use ./test-shared
 
           os:mkdir-all $expected-maven-path
 
-          paths:get-with-current-candidates |
+          paths:-get-with-current-candidates |
             all (all) |
             should-emit &any-order [
               $expected-java-path
