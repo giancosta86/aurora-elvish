@@ -2,6 +2,7 @@ use os
 use str
 use ../command
 use ../curl
+use ../map
 use ./paths
 
 pragma unknown-command = disallow
@@ -27,8 +28,8 @@ fn -run-sdkman { |@arguments|
   -ensure-installed
 
   str:join ' ' $arguments |
-    put 'OLD_PATH="$PATH" && source '$paths:init-script' && export PATH="$OLD_PATH" && sdk '(all) |
-    command:update-env-via-bash [PATH SDKMAN_ENV]
+    put 'source '$paths:init-script' && sdk '(all) |
+    command:update-env-via-bash [SDKMAN_ENV]
 }
 
 #
@@ -39,37 +40,37 @@ fn -run-sdkman { |@arguments|
 # As a plus, this command sets the PATH and *_HOME variables in a robust and consistent way.
 #
 var sdk~ = (
-  var used-versions = [&]
-
-  var env-versions = [&]
+  var overriding-versions = [&]
 
   fn handle-path-altering-command { |block|
     $block
 
-    paths:init-vars &overriding-maps=[
-      $env-versions
-
-      $used-versions
-    ]
+    paths:reset-vars &overriding-versions=$overriding-versions
   }
 
   fn handle-use { |candidate version|
     handle-path-altering-command {
-      set used-versions = (
-        assoc $used-versions $candidate $version
+      set overriding-versions = (
+        assoc $overriding-versions $candidate $version
       )
     }
   }
 
   fn handle-env-load {
     handle-path-altering-command {
-      set env-versions = (paths:get-sdkfile-candidates)
+      set overriding-versions = (
+        {
+          put $overriding-versions
+          paths:get-sdkfile-candidates
+        } |
+          map:merge
+      )
     }
   }
 
   fn handle-env-clear {
     handle-path-altering-command {
-      set env-versions = [&]
+      set overriding-versions = [&]
     }
   }
 

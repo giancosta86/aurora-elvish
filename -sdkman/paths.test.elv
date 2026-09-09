@@ -273,8 +273,8 @@ use ./test-shared
           os:mkdir-all $expected-maven-path
 
           paths:-get-reset &overriding-versions=[
-            [&java=SOME-VERSION &maven=3.9.9]
-            [&java=23-open]
+            &java=23-open
+            &maven=3.9.9
           ] |
             should-emit &any-order [
               $expected-java-path
@@ -312,8 +312,8 @@ use ./test-shared
         os:mkdir-all $expected-maven-path
 
         paths:reset-vars &overriding-versions=[
-          [&java=SOME-VERSION &maven=3.9.9]
-          [&java=23-open]
+          &java=23-open
+          &maven=3.9.9
         ]
 
         >> 'should update PATH' {

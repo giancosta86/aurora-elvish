@@ -130,13 +130,13 @@ fn get-sdkfile-candidates {
 #
 # * the "current" file system object, if existing.
 #
-# The "overriding-versions" flag takes in input an array of <candidate><version> maps,
-# applied from left to right - and they will override the default, "current"-based paths.
+# The "overriding-versions" flag takes in input a <candidate><version> map - whose versions
+# will replace the default, "current"-based paths.
 #
 # Anyway, if no directory can be found for the requested version of a candidate,
 # such candidate won't be added to PATH.
 #
-fn -get-reset { |&overriding-versions=[]|
+fn -get-reset { |&overriding-versions=[&]|
   var current-based-map = (
     each-candidate { |candidate|
       put [$candidate current]
@@ -147,7 +147,7 @@ fn -get-reset { |&overriding-versions=[]|
   var actual-candidate-map = (
     {
       put $current-based-map
-      all $overriding-versions
+      put $overriding-versions
     } |
       map:merge
   )
@@ -184,13 +184,13 @@ fn -get-reset { |&overriding-versions=[]|
 # Resets both the PATH and the *_HOME environment variables to the "current" version of each candidate,
 # provided its file-system entry exists.
 #
-# The "overriding-versions" flag takes in input an array of <candidate><version> maps,
-# applied from left to right - and they will override the default, "current"-based paths.
+# The "overriding-versions" flag takes in input a <candidate><version> map - whose versions
+# will replace the default, "current"-based paths.
 #
 # Anyway, only existing paths will be added to the PATH; similarly, if a candidate does not appear
 # in the path, its *_HOME variable will be unset.
 #
-fn reset-vars { |&overriding-versions=[]|
+fn reset-vars { |&overriding-versions=[&]|
   set paths = [(-get-reset &overriding-versions=$overriding-versions)]
 
   setup-sdk-homes

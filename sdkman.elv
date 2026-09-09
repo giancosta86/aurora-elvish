@@ -29,7 +29,7 @@ fn setup-jvm-homes {
   setup-sdk-homes
 }
 
-var setup-env~ = $chdir-hooks:setup-env
+var setup-env~ = $chdir-hooks:setup-env~
 
 fn sdkman { |@arguments|
   deprecate 'Please, call `sdk` instead'
@@ -38,3 +38,5 @@ fn sdkman { |@arguments|
 }
 
 var get-sdkfile-candidates~ = $paths:get-sdkfile-candidates~
+
+paths:reset-vars
