@@ -36,8 +36,78 @@ fn -run-sdkman { |@arguments|
 #
 # If SDKMAN is not already on the system, it will be automatically installed.
 #
-fn sdk { |@arguments|
-  curl:with-silence {
-    -run-sdkman $@arguments
+# As a plus, this command handles PATH and *_HOME variables in a robust and consistent way.
+#
+var sdk~ = (
+  var used-versions = [&]
+
+  var env-versions = [&]
+
+  fn handle-path-altering-command { |block|
+    $block
+
+    paths:init-vars &overriding-maps=[
+      $env-versions
+
+      $used-versions
+    ]
   }
-}
+
+  fn handle-use { |candidate version|
+    handle-path-altering-command {
+      set used-versions = (
+        assoc $used-versions $candidate $version
+      )
+    }
+  }
+
+  fn handle-env-switch {
+    handle-path-altering-command {
+      set env-versions = (paths:get-sdkfile-candidates)
+    }
+  }
+
+  fn handle-env-clear {
+    handle-path-altering-command {
+      set env-versions = [&]
+    }
+  }
+
+  fn process-successful-run { |@arguments|
+    var argument-count = (count $arguments)
+
+    if (== $argument-count 0) {
+      return
+    }
+
+    var command = $arguments[0]
+
+    if (has-value [use u] $command) {
+      handle-use $arguments[1] $arguments[2]
+    } elif (eq $command env) {
+      if (== $argument-count 1) {
+        handle-env-switch
+      } else {
+        var sub-command = $arguments[1]
+
+        if (eq $sub-command install) {
+          handle-env-switch
+        } elif (eq $sub-command clear) {
+          handle-env-clear
+        }
+      }
+    }
+  }
+
+  put { |@arguments|
+    try {
+      curl:with-silence {
+        -run-sdkman $@arguments
+      }
+    } catch {
+      # Just do nothing
+    } else {
+      process-successful-run $@arguments
+    }
+  }
+)

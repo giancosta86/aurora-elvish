@@ -43,8 +43,6 @@ fn -after-cd {
 # finally, runs the after-cd hook.
 #
 fn register {
-  set paths = (paths:get-with-current-candidates)
-
   chdir-hooks:register [
     &debug-id='sdkman'
 

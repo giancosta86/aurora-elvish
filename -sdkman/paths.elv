@@ -2,6 +2,8 @@ use os
 use path
 use re
 use str
+use ../lang
+use ../map
 
 pragma unknown-command = disallow
 
@@ -47,22 +49,35 @@ fn get-candidate-home-var { |candidate|
   put (str:to-upper $candidate)'_HOME'
 }
 
+#
+# Given a path, emits the most suitable value for a *_HOME variable:
+#
+# * if the source path is a "bin" directory, emits its parent
+#
+# * otherwise, emits the directory itself
+#
+fn -get-home-path { |@arguments|
+  var path = (lang:get-single-input $arguments)
+
+  if (eq (path:base $path) bin) {
+    path:dir $path
+  } else {
+    put $path
+  }
+}
+
+#
+# Given a candidate, sets its *_HOME variable to the PATH entry
+#
 fn -setup-candidate-home { |candidate|
   var home-var = (get-candidate-home-var $candidate)
 
   var candidate-root = (get-candidate-dir $candidate)
 
-  all $paths | each { |current-path|
-    if (str:has-prefix $current-path $candidate-root) {
-      var home-path = (
-        if (eq (path:base $current-path) bin) {
-          path:dir $current-path
-        } else {
-          put $current-path
-        }
-      )
-
-      set-env $home-var $home-path
+  all $paths | each { |path|
+    if (str:has-prefix $path $candidate-root) {
+      -get-home-path $path |
+        set-env $home-var (all)
 
       return
     }
@@ -114,21 +129,31 @@ fn get-sdkfile-candidates {
 #
 # * the "current" file system object, if existing.
 #
-# If no path representative can be found, the candidate in question won't be added to PATH.
+# The "overriding-maps" flag takes in input an array of <candidate><version> maps,
+# applied from left to right, that override the default, "current"-based paths.
 #
-fn -get-with-current-candidates {
-  var paths-without-candidates = [(
-    all $paths |
-      keep-if { |path|
-        not (str:has-prefix $path (path:join $sdkman-home candidates))
-      }
-  )]
-
-  var current-candidate-paths = [(
+# Anyway, if no directory can be found for the requested version of a candidate,
+# such candidate won't be added to PATH.
+#
+fn -reset { |&overriding-maps=[]|
+  var current-based-map = (
     each-candidate { |candidate|
-      var candidate-root = (get-candidate-dir $candidate)
+      put [$candidate current]
+    } |
+      make-map
+  )
 
-      var current-path = (path:join $candidate-root current)
+  var actual-candidate-map = (
+    {
+      put $current-based-map
+      all $overriding-maps
+    } |
+      map:merge
+  )
+
+  var existing-candidate-paths = [(
+    map:iterate { |candidate version|
+      var current-path = (get-candidate-dir $candidate &version=$version)
 
       var bin-path = (path:join $current-path bin)
 
@@ -140,19 +165,35 @@ fn -get-with-current-candidates {
     }
   )]
 
+  var candidates-hub = (path:join $sdkman-home candidates)
+
+  var paths-without-candidates = [(
+    all $paths |
+      keep-if { |path|
+        not (str:has-prefix $path $candidates-hub)
+      }
+  )]
+
   put [(
-    all $current-candidate-paths
+    all $existing-candidate-paths
     all $paths-without-candidates
   )]
 }
 
 #
-# Runs the initialization provided by SDKMAN's init script.
+# Resets both the PATH and the *_HOME environment variables to the "current" version of each candidate,
+# provided its file-system entry exists.
 #
-fn -init-vars {
-  set paths = (-get-with-current-candidates)
+# The "overriding-maps" flag takes in input an array of <candidate><version> maps,
+# applied from left to right, that override the default, current-based paths.
+#
+# Anyway, only existing paths will be added to the PATH; similarly, if a candidate does not appear
+# in the path, its *_HOME variable will be unset.
+#
+fn reset-vars { |&overriding-maps=[]|
+  set paths = (-reset &overriding-maps=$overriding-maps)
 
   setup-sdk-homes
 }
 
--init-vars
+reset-vars

@@ -44,6 +44,23 @@ use ./test-shared
         should-be JAVA_HOME
     }
 
+    >> 'getting a *_HOME path' {
+      >> 'when the path ends with "bin"' {
+        var expected-home = (path:join alpha beta gamma)
+
+        path:join $expected-home bin |
+          paths:-get-home-path |
+          should-be $expected-home
+      }
+
+      >> 'when the path does not end with "bin"' {
+        var expected-home = (path:join alpha beta gamma)
+
+        paths:-get-home-path $expected-home |
+          should-be $expected-home
+      }
+    }
+
     >> 'setting up the *_HOME environment variable for a candidate' {
       >> 'when the candidate is not in PATH' {
         tmp paths = []
@@ -184,7 +201,7 @@ use ./test-shared
       }
     }
 
-    >> 'getting with current candidates' {
+    >> 'resetting to current candidates' {
       >> 'when there are no candidates' {
         test-shared:within-temp-sdkman-home &candidates=[] {
           tmp paths = [
@@ -195,7 +212,7 @@ use ./test-shared
             Z
           ]
 
-          paths:-get-with-current-candidates |
+          paths:-reset |
             should-be [
               X
               Y
@@ -221,7 +238,7 @@ use ./test-shared
 
           os:mkdir-all $expected-maven-path
 
-          paths:-get-with-current-candidates |
+          paths:-reset |
             all (all) |
             should-emit &any-order [
               $expected-java-path
@@ -232,6 +249,8 @@ use ./test-shared
             ]
         }
       }
+
+      >> 'when overriding maps are passed'
     }
   }
 }
