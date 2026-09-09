@@ -53,13 +53,3 @@ fn register {
     &after=$-after-cd~
   ]
 }
-
-#
-# Ensures that SDKMAN's environment variables are set in the current shell,
-# then runs the post-cd hook without installing it.
-#
-fn setup-env {
-  set paths = (paths:get-with-current-candidates)
-
-  $-after-cd~
-}

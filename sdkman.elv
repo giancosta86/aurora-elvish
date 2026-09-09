@@ -10,6 +10,8 @@ var register-chdir-hooks~ = $chdir-hooks:register~
 
 var get-candidate-dir~ = $paths:get-candidate-dir~
 
+var each-candidate~ = $paths:each-candidate~
+
 fn get-sdk-directory { |candidate version|
   deprecate 'Use get-candidate-dir instead!'
 
@@ -25,7 +27,7 @@ fn setup-jvm-homes {
   setup-sdk-homes
 }
 
-var setup-env~ = $chdir-hooks:setup-env~
+var setup-env~ = $chdir-hooks:-after-cd~
 
 fn sdkman { |@arguments|
   deprecate 'Please, call `sdk` instead'
