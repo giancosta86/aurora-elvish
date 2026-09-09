@@ -201,9 +201,9 @@ use ./test-shared
       }
     }
 
-    >> 'resetting to current candidates' {
-      >> 'when there are no candidates' {
-        test-shared:within-temp-sdkman-home &candidates=[] {
+    >> 'getting the PATH reset to the current candidates' {
+      >> 'when there are no candidates with existing dirs' {
+        test-shared:within-temp-sdkman-home {
           tmp paths = [
             X
             (path:join $pwd candidates dodo)
@@ -212,8 +212,8 @@ use ./test-shared
             Z
           ]
 
-          paths:-reset |
-            should-be [
+          paths:-get-reset |
+            should-emit [
               X
               Y
               Z
@@ -230,16 +230,18 @@ use ./test-shared
             Z
           ]
 
-          var expected-java-path = (path:join (paths:get-candidate-dir java) current)
-
+          var expected-java-path = (
+            paths:get-candidate-dir java &version=current
+          )
           os:mkdir-all $expected-java-path
 
-          var expected-maven-path = (path:join (paths:get-candidate-dir maven) current bin)
-
+          var expected-maven-path = (
+            paths:get-candidate-dir maven &version=current |
+              path:join (all) bin
+          )
           os:mkdir-all $expected-maven-path
 
-          paths:-reset |
-            all (all) |
+          paths:-get-reset |
             should-emit &any-order [
               $expected-java-path
               $expected-maven-path
@@ -250,7 +252,92 @@ use ./test-shared
         }
       }
 
-      >> 'when overriding maps are passed'
+      >> 'when overriding versions are passed' {
+        test-shared:within-temp-sdkman-home &candidates=[java maven] {
+          tmp paths = [
+            X
+            (paths:get-candidate-dir yogi)
+            Y
+            Z
+          ]
+
+          var expected-java-path = (
+            paths:get-candidate-dir java &version=23-open
+          )
+          os:mkdir-all $expected-java-path
+
+          var expected-maven-path = (
+            paths:get-candidate-dir maven &version=3.9.9 |
+              path:join (all) bin
+          )
+          os:mkdir-all $expected-maven-path
+
+          paths:-get-reset &overriding-versions=[
+            [&java=SOME-VERSION &maven=3.9.9]
+            [&java=23-open]
+          ] |
+            should-emit &any-order [
+              $expected-java-path
+              $expected-maven-path
+              X
+              Y
+              Z
+            ]
+        }
+      }
+    }
+
+    >> 'resetting the PATH and the *_HOME variables' {
+      tmp E:JAVA_HOME = alpha
+      tmp E:MAVEN_HOME = beta
+      tmp E:YOGI_HOME = gamma
+
+      test-shared:within-temp-sdkman-home &candidates=[java maven yogi] {
+        tmp paths = [
+          X
+          (paths:get-candidate-dir yogi)
+          Y
+          Z
+        ]
+
+        var expected-java-path = (
+          paths:get-candidate-dir java &version=23-open
+        )
+        os:mkdir-all $expected-java-path
+
+        var expected-maven-path = (
+          paths:get-candidate-dir maven &version=3.9.9 |
+            path:join (all) bin
+        )
+        os:mkdir-all $expected-maven-path
+
+        paths:reset-vars &overriding-versions=[
+          [&java=SOME-VERSION &maven=3.9.9]
+          [&java=23-open]
+        ]
+
+        >> 'should update PATH' {
+          all $paths |
+            should-emit &any-order [
+              $expected-java-path
+              $expected-maven-path
+              X
+              Y
+              Z
+            ]
+        }
+
+        >> 'should update *_HOME env variables' {
+          get-env JAVA_HOME |
+            should-be $expected-java-path
+
+          get-env MAVEN_HOME |
+            should-be (path:dir $expected-maven-path)
+
+          has-env YOGI_HOME |
+            should-be $false
+        }
+      }
     }
   }
 }

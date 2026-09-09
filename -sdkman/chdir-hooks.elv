@@ -51,3 +51,7 @@ fn register {
     &after=$-after-cd~
   ]
 }
+
+fn setup-env {
+  fail 'WHAT SHOULD I DO HERE?'
+}
