@@ -36,7 +36,7 @@ fn -run-sdkman { |@arguments|
 #
 # If SDKMAN is not already on the system, it will be automatically installed.
 #
-# As a plus, this command handles PATH and *_HOME variables in a robust and consistent way.
+# As a plus, this command sets the PATH and *_HOME variables in a robust and consistent way.
 #
 var sdk~ = (
   var used-versions = [&]
@@ -61,7 +61,7 @@ var sdk~ = (
     }
   }
 
-  fn handle-env-switch {
+  fn handle-env-load {
     handle-path-altering-command {
       set env-versions = (paths:get-sdkfile-candidates)
     }
@@ -90,18 +90,18 @@ var sdk~ = (
       handle-use $arguments[1] $arguments[2]
     } elif (eq $command env) {
       if (== $argument-count 1) {
-        handle-env-switch
+        handle-env-load
       } else {
         var sub-command = $arguments[1]
 
         if (eq $sub-command install) {
-          handle-env-switch
+          handle-env-load
         } elif (eq $sub-command clear) {
           handle-env-clear
         }
-      } elif (has-value [uninstall rm] $command) {
-        handle-uninstall
       }
+    } elif (has-value [uninstall rm] $command) {
+      handle-uninstall
     }
   }
 
