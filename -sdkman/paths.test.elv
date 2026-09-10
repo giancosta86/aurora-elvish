@@ -63,7 +63,7 @@ use ./test-shared
 
     >> 'setting up the *_HOME environment variable for a candidate' {
       >> 'when the candidate is not in PATH' {
-        tmp paths = []
+        tmp paths = [X]
         tmp E:JAVA_HOME = DODO
 
         test-shared:within-temp-sdkman-home &candidates=[java] {
@@ -149,7 +149,7 @@ use ./test-shared
         tmp E:JAVA_HOME = YOGI
         tmp E:MAVEN_HOME = BUBU
 
-        tmp paths = []
+        tmp paths = [X]
 
         test-shared:within-temp-sdkman-home &candidates=[java maven] {
           paths:setup-sdk-homes
