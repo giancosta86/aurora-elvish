@@ -25,11 +25,13 @@ fn -ensure-installed {
 }
 
 fn -run-sdkman { |@arguments|
-  -ensure-installed
+  curl:with-silence {
+    -ensure-installed
 
-  str:join ' ' $arguments |
-    put 'source '$paths:init-script' && sdk '(all) |
-    command:update-env-via-bash [SDKMAN_ENV]
+    str:join ' ' $arguments |
+      put 'source '$paths:init-script' && sdk '(all) |
+      command:update-env-via-bash [SDKMAN_ENV]
+  }
 }
 
 #
@@ -37,7 +39,7 @@ fn -run-sdkman { |@arguments|
 #
 # If SDKMAN is not already on the system, it will be automatically installed.
 #
-# As a plus, this command sets the PATH and *_HOME variables in a robust and consistent way.
+# As a plus, ensures that the PATH and *_HOME variables are set in a robust and consistent way.
 #
 var sdk~ = (
   var overriding-versions = [&]
@@ -74,10 +76,6 @@ var sdk~ = (
     }
   }
 
-  fn handle-uninstall {
-    handle-path-altering-command { }
-  }
-
   fn process-successful-run { |@arguments|
     var argument-count = (count $arguments)
 
@@ -101,16 +99,12 @@ var sdk~ = (
           handle-env-clear
         }
       }
-    } elif (has-value [uninstall rm] $command) {
-      handle-uninstall
     }
   }
 
   put { |@arguments|
     try {
-      curl:with-silence {
-        -run-sdkman $@arguments
-      }
+      -run-sdkman $@arguments
     } catch {
       # Just do nothing
     } else {

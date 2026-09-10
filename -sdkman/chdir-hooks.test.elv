@@ -1,8 +1,6 @@
-use os
 use path
 use ./chdir-hooks
 use ./paths
-use ./test-shared
 use ./wrapper
 
 fn get-sdkman-runs { |block|

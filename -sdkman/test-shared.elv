@@ -1,5 +1,4 @@
 use os
-use path
 use ../fs
 use ./paths
 

@@ -20,6 +20,8 @@ var sdk-file = .sdkmanrc
 #
 # * otherwise, the root directory for the candidate will be emitted.
 #
+# The directory might well not exist - this is just a path manipulation function.
+#
 fn get-candidate-dir { |candidate &version=$nil|
   var candidate-home = (
     path:join $sdkman-home candidates $candidate
