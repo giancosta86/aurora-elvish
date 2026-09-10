@@ -177,7 +177,6 @@ fn -get-reset { |&overriding-versions=[&]|
       }
   )]
 
-
   all $existing-candidate-paths
   all $paths-without-candidates
 }

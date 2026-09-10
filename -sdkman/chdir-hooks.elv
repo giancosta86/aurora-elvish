@@ -32,10 +32,9 @@ fn -after-cd {
 
   if $current-dir-has-sdk-file {
     wrapper:sdk env install
-    wrapper:sdk env use
   }
 
-  paths:setup-sdk-homes
+  paths:reset-vars
 }
 
 #
@@ -44,14 +43,17 @@ fn -after-cd {
 #
 fn register {
   chdir-hooks:register [
-    &debug-id='sdkman'
-
     &before=$-before-cd~
 
     &after=$-after-cd~
   ]
 }
 
+#
+# Resets the PATH and the *_HOME variables to the available "current" versions,
+# then invokes the post-cd hook.
+#
 fn setup-env {
-  fail 'WHAT SHOULD I DO HERE?'
+  paths:reset-vars
+  -after-cd
 }

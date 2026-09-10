@@ -4,39 +4,40 @@ use ./-sdkman/wrapper
 
 var sdk-file = $paths:sdk-file
 
-var sdk~ = $wrapper:sdk~
-
-var register-chdir-hooks~ = $chdir-hooks:register~
-
 var get-candidate-dir~ = $paths:get-candidate-dir~
+
+fn get-sdk-directory { |candidate version|
+  deprecate 'Please, call `get-candidate-dir` instead!'
+
+  get-candidate-dir $candidate &version=$version
+}
 
 var each-candidate~ = $paths:each-candidate~
 
 var get-candidate-home-var~ = $paths:get-candidate-home-var~
 
+var get-sdkfile-candidates~ = $paths:get-sdkfile-candidates~
 
+var reset-vars~ = $paths:reset-vars~
 
-var setup-sdk-homes~ = $paths:setup-sdk-homes~
-
-fn get-sdk-directory { |candidate version|
-  deprecate 'Use get-candidate-dir instead!'
-
-  get-candidate-dir $candidate &version=$version
+fn setup-sdk-homes {
+  deprecate 'Please, call `reset-vars` instead!'
+  reset-vars
 }
 
 fn setup-jvm-homes {
-  deprecate 'Use setup-sdk-homes instead'
-  setup-sdk-homes
+  deprecate 'Please, call `reset-vars` instead!'
+  reset-vars
 }
 
-var setup-env~ = $chdir-hooks:setup-env~
+var sdk~ = $wrapper:sdk~
 
 fn sdkman { |@arguments|
-  deprecate 'Please, call `sdk` instead'
+  deprecate 'Please, call `sdk` instead!'
 
   sdk $@arguments
 }
 
-var get-sdkfile-candidates~ = $paths:get-sdkfile-candidates~
+var register-chdir-hooks~ = $chdir-hooks:register~
 
-paths:reset-vars
+var setup-env~ = $chdir-hooks:setup-env~
