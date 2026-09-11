@@ -33,13 +33,10 @@ fn -after-cd {
   if $current-dir-has-sdk-file {
     wrapper:sdk env install
   }
-
-  paths:reset-vars
 }
 
 #
-# Registers the chdir hooks for SDKMAN, after ensuring the related env variables;
-# finally, runs the after-cd hook.
+# Registers the chdir hooks for SDKMAN, then runs the after-cd hook.
 #
 fn register {
   chdir-hooks:register [
@@ -49,11 +46,8 @@ fn register {
   ]
 }
 
+
 #
-# Resets the PATH and the *_HOME variables to the available "current" versions,
-# then invokes the post-cd hook.
+# Invokes the after-cd hook without registering it; especially suitable for CI/CD contexts.
 #
-fn setup-env {
-  paths:reset-vars
-  -after-cd
-}
+var setup-env~ = $-after-cd~

@@ -77,7 +77,6 @@ fn get-sdkman-runs { |block|
       } |
         should-be [
           [env install]
-          [env use]
         ]
     }
 
@@ -107,7 +106,6 @@ fn get-sdkman-runs { |block|
       } |
         should-be [
           [env install]
-          [env use]
         ]
     }
   }

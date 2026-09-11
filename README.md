@@ -127,15 +127,31 @@ In particular:
 
 - if the target directory contains a **.sdkmanrc** file, it will run `sdk env install`.
 
-- if the target directory does NOT contain **.sdkmanrc**, but the previous directory did, executes `sdk env clear`.
+- if the target directory does NOT contain **.sdkmanrc**, but the previous directory did, it will execute `sdk env clear`.
 
-To enable them, you could run - for example, in your **rc.elv** file:
+To enable them, you should add these lines to your **rc.elv** file:
 
 ```elvish
 use github.com/giancosta86/ethereal/v1/sdkman
 
 sdkman:register-chdir-hooks
 ```
+
+**Please, note**: the hooks also take care of the environment variables - like **PATH** and **\*\_HOME**; without the hooks, please add this line to your **rc.elv** script instead:
+
+```elvish
+use github.com/giancosta86/ethereal/v1/sdkman
+
+sdkman:reset-vars
+```
+
+On the other hand, to run the **after-cd hook** - which will initialize the environment variables and then run `sdk env install` if the **.sdkmanrc** file exists in the current directory - without registering it, you can execute at any time:
+
+```elvish
+sdkman:setup-env
+```
+
+This is especially useful in _CI/CD contexts_ - actually, it is internally used by [aurora-github](https://github.com/giancosta86/aurora-github).
 
 ## Credits
 
