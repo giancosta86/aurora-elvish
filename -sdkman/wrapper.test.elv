@@ -22,22 +22,18 @@ use ./wrapper
       tmp E:JAVA_HOME = DODO
 
       test-shared:within-temp-sdkman-home {
-        var expected-path-entry = (
-          paths:get-candidate-dir java &version=23-open |
-            path:join (all) bin
-        )
-        os:mkdir-all $expected-path-entry
+        test-shared:install java 23-open &bin
 
         wrapper:sdk use java 23-open
 
         all $paths |
           should-emit [
-            $expected-path-entry
+            (test-shared:get-path-entry java 23-open &bin)
             X
           ]
 
         get-env JAVA_HOME |
-          should-be (path:dir $expected-path-entry)
+          should-be (paths:get-candidate-dir java &version=23-open)
       }
     }
 
@@ -47,40 +43,36 @@ use ./wrapper
       tmp E:MAVEN_HOME = bubu
 
       test-shared:within-temp-sdkman-home {
-        var expected-java-home = (paths:get-candidate-dir java &version=23-open)
+        test-shared:install java 23-open &bin
 
-        var expected-java-path-entry = (
-          path:join $expected-java-home bin
-        )
-        os:mkdir-all $expected-java-path-entry
-
-        var expected-maven-home = (paths:get-candidate-dir maven &version=3.9.9)
-
-        var expected-maven-path-entry = (
-          path:join $expected-maven-home bin
-        )
-        os:mkdir-all $expected-maven-path-entry
+        test-shared:install maven 3.9.9 &bin
 
         fs:within-temp-dir {
           {
-            echo java=23-open
-            echo maven=3.9.9
+            echo java=8.0.502.fx-zulu
+            echo maven=3.3.9
           } > $paths:sdk-file
+
+          #Simulating the effects of the env loading
+          {
+            test-shared:install java 8.0.502.fx-zulu &bin &current=$false
+            test-shared:install maven 3.3.9 &bin &current=$false
+          }
 
           $sdk-invocation-block
 
           all $paths |
             should-emit &any-order [
-              $expected-java-path-entry
-              $expected-maven-path-entry
+              (test-shared:get-path-entry java 8.0.502.fx-zulu &bin)
+              (test-shared:get-path-entry maven 3.3.9 &bin)
               X
             ]
 
           get-env JAVA_HOME |
-            should-be $expected-java-home
+            should-be (paths:get-candidate-dir java &version=8.0.502.fx-zulu)
 
           get-env MAVEN_HOME |
-            should-be $expected-maven-home
+            should-be (paths:get-candidate-dir maven &version=3.3.9)
         }
       }
     }
@@ -98,36 +90,29 @@ use ./wrapper
     }
 
     >> 'env clear' {
-      test-shared:within-temp-sdkman-home &candidates=[java] {
-        var legacy-java-home = (
-          paths:get-candidate-dir java &version=8.0.502.fx-zulu
-        )
-        os:mkdir-all (path:join $legacy-java-home bin)
+      test-shared:within-temp-sdkman-home {
+        test-shared:install java 8.0.502.fx-zulu &bin
 
-        test-shared:set-current java 8.0.502.fx-zulu
-
-        var modern-java-home = (
-          paths:get-candidate-dir java &version=23-open
-        )
-        os:mkdir-all $modern-java-home
+        # Simulating an SDK installed because of the .sdkmanrc file
+        {
+          test-shared:install java 23-open &current=$false
+        }
 
         tmp paths = [
-          (path:join $modern-java-home bin)
+          (test-shared:get-path-entry java 23-open)
         ]
 
-        tmp E:JAVA_HOME = $modern-java-home
+        tmp E:JAVA_HOME = (paths:get-candidate-dir java &version=23-open)
 
         wrapper:sdk env clear
 
-        var current-link = (test-shared:get-current-link java)
-
         all $paths |
           should-emit &any-order [
-            (path:join $current-link bin)
+            (test-shared:get-current-link java &bin)
           ]
 
         get-env JAVA_HOME |
-          should-be $current-link
+          should-be (test-shared:get-current-link java)
       }
     }
   }

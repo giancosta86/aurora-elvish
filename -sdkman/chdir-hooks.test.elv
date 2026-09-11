@@ -25,19 +25,14 @@ fn get-sdkman-runs { |block|
       tmp E:JAVA_HOME = dodo
 
       test-shared:within-temp-sdkman-home {
-        paths:get-candidate-dir java &version=23-open |
-          path:join (all) bin |
-          os:mkdir-all (all)
-
-        test-shared:set-current java 23-open
-
+        test-shared:install java 23-open &bin
 
         chdir-hooks:register
 
         >> 'should update PATH' {
           all $paths |
             should-emit &any-order [
-              (path:join (test-shared:get-current-link java) bin)
+              (test-shared:get-current-link java &bin)
               X
             ]
         }

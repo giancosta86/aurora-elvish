@@ -26,7 +26,13 @@ use ./test-shared
       }
 
       >> 'when there are candidates' {
-        test-shared:within-temp-sdkman-home &candidates=[alpha beta gamma] {
+        test-shared:within-temp-sdkman-home {
+          test-shared:install alpha 1.0
+
+          test-shared:install beta 7.4
+
+          test-shared:install gamma 3.2
+
           paths:each-candidate { |candidate|
             echo 📁 $candidate
           } |
@@ -66,7 +72,9 @@ use ./test-shared
         tmp paths = [X]
         tmp E:JAVA_HOME = DODO
 
-        test-shared:within-temp-sdkman-home &candidates=[java] {
+        test-shared:within-temp-sdkman-home {
+          test-shared:install java 23-open
+
           paths:-setup-candidate-home java
 
           has-env JAVA_HOME |
@@ -77,27 +85,25 @@ use ./test-shared
         >> 'when the PATH entry ends with "bin"' {
           tmp E:JAVA_HOME = DODO
 
-          test-shared:within-temp-sdkman-home &candidates=[java] {
-            var expected-home = (paths:get-candidate-dir java &version=23-open)
-
+          test-shared:within-temp-sdkman-home  {
             tmp paths = [
               A
               B
-              (path:join $expected-home bin)
+              (test-shared:get-path-entry java 23-open &bin)
               C
             ]
 
             paths:-setup-candidate-home java
 
             get-env JAVA_HOME |
-              should-be $expected-home
+              should-be (paths:get-candidate-dir java &version=23-open)
           }
         }
 
         >> 'when the PATH entry does not end with "bin"' {
           tmp E:JAVA_HOME = YOGI
 
-          test-shared:within-temp-sdkman-home &candidates=[java] {
+          test-shared:within-temp-sdkman-home {
             var expected-home = (paths:get-candidate-dir java &version=23-open)
 
             tmp paths = [
@@ -121,16 +127,16 @@ use ./test-shared
         tmp E:JAVA_HOME = YOGI
         tmp E:MAVEN_HOME = BUBU
 
-        test-shared:within-temp-sdkman-home &candidates=[java maven] {
-          var expected-java-home = (paths:get-candidate-dir java &version=23-open)
-          var expected-maven-home = (paths:get-candidate-dir maven &version=3.9.9)
+        test-shared:within-temp-sdkman-home {
+          test-shared:install java 23-open
+          test-shared:install maven 3.9.9 &bin
 
           tmp paths = [
             A
             B
-            (path:join $expected-maven-home bin)
+            (test-shared:get-path-entry maven 3.9.9 &bin)
             C
-            (path:join $expected-java-home)
+            (test-shared:get-path-entry java 23-open)
             D
             E
           ]
@@ -138,10 +144,10 @@ use ./test-shared
           paths:setup-sdk-homes
 
           get-env JAVA_HOME |
-            should-be $expected-java-home
+            should-be (paths:get-candidate-dir java &version=23-open)
 
           get-env MAVEN_HOME |
-            should-be $expected-maven-home
+            should-be (paths:get-candidate-dir maven &version=3.9.9)
         }
       }
 
@@ -222,7 +228,7 @@ use ./test-shared
       }
 
       >> 'when there are candidates with existing dirs' {
-        test-shared:within-temp-sdkman-home &candidates=[java maven] {
+        test-shared:within-temp-sdkman-home {
           tmp paths = [
             X
             (paths:get-candidate-dir yogi)
@@ -230,22 +236,14 @@ use ./test-shared
             Z
           ]
 
-          var concrete-java-path = (paths:get-candidate-dir java &version=23-open)
+          test-shared:install java 23-open
 
-          os:mkdir-all $concrete-java-path
-
-          test-shared:set-current java 23-open
-
-          var concrete-maven-path = (paths:get-candidate-dir maven &version=3.9.9)
-
-          os:mkdir-all (path:join $concrete-maven-path bin)
-
-          test-shared:set-current maven 3.9.9
+          test-shared:install maven 3.9.9 &bin
 
           paths:-get-reset |
             should-emit &any-order [
               (test-shared:get-current-link java)
-              (path:join (test-shared:get-current-link maven) bin)
+              (test-shared:get-current-link maven &bin)
               X
               Y
               Z
@@ -254,7 +252,7 @@ use ./test-shared
       }
 
       >> 'when overriding versions are passed' {
-        test-shared:within-temp-sdkman-home &candidates=[java maven] {
+        test-shared:within-temp-sdkman-home {
           tmp paths = [
             X
             (paths:get-candidate-dir yogi)
@@ -262,24 +260,25 @@ use ./test-shared
             Z
           ]
 
-          var expected-java-path = (
-            paths:get-candidate-dir java &version=23-open
-          )
-          os:mkdir-all $expected-java-path
+          {
+            test-shared:install java 23-open
 
-          var expected-maven-path = (
-            paths:get-candidate-dir maven &version=3.9.9 |
-              path:join (all) bin
-          )
-          os:mkdir-all $expected-maven-path
+            test-shared:install maven 3.9.9
+          }
+
+          {
+            test-shared:install java 8.0.502.fx-zulu &current=$false
+
+            test-shared:install maven 3.3.9 &current=$false
+          }
 
           paths:-get-reset &overriding-versions=[
-            &java=23-open
-            &maven=3.9.9
+            &java=8.0.502.fx-zulu
+            &maven=3.3.9
           ] |
             should-emit &any-order [
-              $expected-java-path
-              $expected-maven-path
+              (paths:get-candidate-dir java &version=8.0.502.fx-zulu)
+              (paths:get-candidate-dir maven &version=3.3.9)
               X
               Y
               Z
@@ -293,35 +292,36 @@ use ./test-shared
       tmp E:MAVEN_HOME = beta
       tmp E:YOGI_HOME = gamma
 
-      test-shared:within-temp-sdkman-home &candidates=[java maven yogi] {
+      test-shared:within-temp-sdkman-home &candidates=[yogi] {
         tmp paths = [
           X
-          (paths:get-candidate-dir yogi)
+          (paths:get-candidate-dir yogi &version=14.2)
           Y
           Z
         ]
 
-        var expected-java-path = (
-          paths:get-candidate-dir java &version=23-open
-        )
-        os:mkdir-all $expected-java-path
+        {
+          test-shared:install java 23-open
 
-        var expected-maven-path = (
-          paths:get-candidate-dir maven &version=3.9.9 |
-            path:join (all) bin
-        )
-        os:mkdir-all $expected-maven-path
+          test-shared:install maven 3.9.9 &bin
+        }
+
+        {
+          test-shared:install java 8.0.502.fx-zulu &current=$false
+
+          test-shared:install maven 3.3.9 &bin &current=$false
+        }
 
         paths:reset-vars &overriding-versions=[
-          &java=23-open
-          &maven=3.9.9
+          &java=8.0.502.fx-zulu
+          &maven=3.3.9
         ]
 
         >> 'should update PATH' {
           all $paths |
             should-emit &any-order [
-              $expected-java-path
-              $expected-maven-path
+              (test-shared:get-path-entry java 8.0.502.fx-zulu)
+              (test-shared:get-path-entry maven 3.3.9 &bin)
               X
               Y
               Z
@@ -330,10 +330,10 @@ use ./test-shared
 
         >> 'should update *_HOME env variables' {
           get-env JAVA_HOME |
-            should-be $expected-java-path
+            should-be (paths:get-candidate-dir java &version=8.0.502.fx-zulu)
 
           get-env MAVEN_HOME |
-            should-be (path:dir $expected-maven-path)
+            should-be (paths:get-candidate-dir maven &version=3.3.9)
 
           has-env YOGI_HOME |
             should-be $false
