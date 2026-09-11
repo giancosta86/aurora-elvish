@@ -104,10 +104,7 @@ use ./wrapper
         )
         os:mkdir-all (path:join $legacy-java-home bin)
 
-        var current-link = (
-          path:join (paths:get-candidate-dir java) current
-        )
-        os:symlink $legacy-java-home $current-link
+        test-shared:set-current java 8.0.502.fx-zulu
 
         var modern-java-home = (
           paths:get-candidate-dir java &version=23-open
@@ -121,6 +118,8 @@ use ./wrapper
         tmp E:JAVA_HOME = $modern-java-home
 
         wrapper:sdk env clear
+
+        var current-link = (test-shared:get-current-link java)
 
         all $paths |
           should-emit &any-order [

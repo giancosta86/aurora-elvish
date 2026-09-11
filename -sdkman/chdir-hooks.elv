@@ -36,9 +36,12 @@ fn -after-cd {
 }
 
 #
-# Registers the chdir hooks for SDKMAN, then runs the after-cd hook.
+# Initializes the environment variables, registers the chdir hooks for SDKMAN,
+# then runs the after-cd hook.
 #
 fn register {
+  paths:reset-vars
+
   chdir-hooks:register [
     &before=$-before-cd~
 
@@ -48,6 +51,12 @@ fn register {
 
 
 #
-# Invokes the after-cd hook without registering it; especially suitable for CI/CD contexts.
+# Initializes the environment variables and invokes the after-cd hook without registering it.
 #
-var setup-env~ = $-after-cd~
+# Especially suitable for CI/CD contexts.
+#
+fn setup-env {
+  paths:reset-vars
+
+  -after-cd
+}

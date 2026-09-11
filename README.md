@@ -137,7 +137,7 @@ use github.com/giancosta86/ethereal/v1/sdkman
 sdkman:register-chdir-hooks
 ```
 
-**Please, note**: the hooks also take care of the environment variables - like **PATH** and **\*\_HOME**; without the hooks, please add this line to your **rc.elv** script instead:
+**Please, note**: registering the hooks also takes care of the environment variables - like **PATH** and **\*\_HOME**; without the hooks, please add this line to your **rc.elv** script instead:
 
 ```elvish
 use github.com/giancosta86/ethereal/v1/sdkman
@@ -145,7 +145,7 @@ use github.com/giancosta86/ethereal/v1/sdkman
 sdkman:reset-vars
 ```
 
-On the other hand, to run the **after-cd hook** - which will initialize the environment variables and then run `sdk env install` if the **.sdkmanrc** file exists in the current directory - without registering it, you can execute at any time:
+On the other hand, to initialize the environment variables and then run the **after-cd hook** without registering it, just can execute at any time:
 
 ```elvish
 sdkman:setup-env

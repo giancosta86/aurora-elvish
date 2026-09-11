@@ -230,21 +230,22 @@ use ./test-shared
             Z
           ]
 
-          var expected-java-path = (
-            paths:get-candidate-dir java &version=current
-          )
-          os:mkdir-all $expected-java-path
+          var concrete-java-path = (paths:get-candidate-dir java &version=23-open)
 
-          var expected-maven-path = (
-            paths:get-candidate-dir maven &version=current |
-              path:join (all) bin
-          )
-          os:mkdir-all $expected-maven-path
+          os:mkdir-all $concrete-java-path
+
+          test-shared:set-current java 23-open
+
+          var concrete-maven-path = (paths:get-candidate-dir maven &version=3.9.9)
+
+          os:mkdir-all (path:join $concrete-maven-path bin)
+
+          test-shared:set-current maven 3.9.9
 
           paths:-get-reset |
             should-emit &any-order [
-              $expected-java-path
-              $expected-maven-path
+              (test-shared:get-current-link java)
+              (path:join (test-shared:get-current-link maven) bin)
               X
               Y
               Z
